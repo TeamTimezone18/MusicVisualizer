@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="539.0" prefWidth="796.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicvisualizer.FXMLDocumentController">
+    <children>
+        <Button fx:id="prevButton" layoutX="572.0" layoutY="108.0" onAction="#handlePrevButtonAction" text="Prev" />
+        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
+      <Button fx:id="playButton" layoutX="623.0" layoutY="108.0" onAction="#handlePlayButtonAction" text="Play/Pause" />
+      <Button fx:id="skipButton" layoutX="705.0" layoutY="108.0" onAction="#handleSkipButtonAction" text="Next" />
+      <ListView fx:id="fileList" layoutX="372.0" layoutY="263.0" prefHeight="258.0" prefWidth="200.0" style="-fx-background-color: grey;" />
+      <ListView fx:id="playList" layoutX="582.0" layoutY="263.0" onMouseClicked="#handlePlaylistDblClickAction" prefHeight="258.0" prefWidth="200.0" style="-fx-background-color: grey;" />
+      <Button fx:id="addButton" layoutX="472.0" layoutY="229.0" onAction="#handleAddButtonAction" text="Add to Playlist" />
+      <BarChart fx:id="chart" layoutX="28.0" layoutY="263.0" prefHeight="241.0" prefWidth="322.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
+    </children>
+</AnchorPane>
