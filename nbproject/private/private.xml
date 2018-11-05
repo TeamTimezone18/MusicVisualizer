@@ -3,12 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Personal/Documents/NetBeansProjects/MusicVisualizer/src/musicvisualizer/FXMLDocument.fxml</file>
-            <file>file:/C:/Users/Personal/Documents/NetBeansProjects/MusicVisualizer/src/musicvisualizer/FXMLDocumentController.java</file>
-            <file>file:/C:/Users/Personal/Documents/NetBeansProjects/MusicVisualizer/src/musicvisualizer/Player.java</file>
-            <file>file:/C:/Users/Personal/Documents/NetBeansProjects/MusicVisualizer/src/musicvisualizer/MusicVisualizer.java</file>
-            <file>file:/C:/Users/Personal/Documents/NetBeansProjects/MusicVisualizer/src/musicvisualizer/FileExplorer.java</file>
-            <file>file:/C:/Users/Personal/Documents/NetBeansProjects/MusicVisualizer/src/musicvisualizer/Playlist.java</file>
+            <file>file:/C:/Users/Personal/Desktop/MusicVisualizer/src/musicvisualizer/Player.java</file>
+            <file>file:/C:/Users/Personal/Desktop/MusicVisualizer/src/musicvisualizer/Playlist.java</file>
+            <file>file:/C:/Users/Personal/Desktop/MusicVisualizer/src/musicvisualizer/FXMLDocumentController.java</file>
         </group>
     </open-files>
 </project-private>

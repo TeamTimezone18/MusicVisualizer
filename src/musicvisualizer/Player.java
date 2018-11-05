@@ -8,6 +8,7 @@ package musicvisualizer;
 import java.io.File;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 
 /**
  * @author Benjamin Wasserman
@@ -19,18 +20,17 @@ public class Player {
     
     MediaPlayer mp;
     File track;
-    boolean paused;
     
     public Player()
     {
         track = null;
-        paused = true;
     }
     
     public void PlayNew(File newtrack)
     {
         track = newtrack;
-        paused = false;
+        
+        //TODO: Stop and release old player before making a new one
         
         String uriString = track.toURI().toString();
         mp = new MediaPlayer(new Media(uriString));
@@ -39,22 +39,24 @@ public class Player {
     
     public void PlayPause()
     {
-        if (paused)
+        //TODO: make sure player exists before trying to play/pause
+        
+        if (mp.getStatus() == Status.PAUSED)
         {
             mp.play();
-            paused = false;
         }
-        else
+        else if (mp.getStatus() == Status.PLAYING)
         {
             mp.pause(); 
-            paused = true;
         }
     }
     
     /* TODO
     // - get metadata functions
-    // - visualization functions
-    // - set playback time function
+    // - visualization data generator functions
+    // - Get current playback time function
+    // - Set current playback time function using mp.seek()?
+    // 
     
     */
     

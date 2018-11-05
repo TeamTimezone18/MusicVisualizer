@@ -33,6 +33,7 @@ public class Playlist {
     
     public void AddTracks(ObservableList<File> newtracks)
     {
+        //TODO: skip adding track that are already in the playlist
         tracks.addAll(newtracks);
     }
     

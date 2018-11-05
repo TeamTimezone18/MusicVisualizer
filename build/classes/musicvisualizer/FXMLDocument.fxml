@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.chart.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -7,16 +9,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="539.0" prefWidth="796.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicvisualizer.FXMLDocumentController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="564.0" prefWidth="937.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicvisualizer.FXMLDocumentController">
     <children>
-        <Button fx:id="prevButton" layoutX="572.0" layoutY="108.0" onAction="#handlePrevButtonAction" text="Prev" />
-        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
-      <Button fx:id="playButton" layoutX="623.0" layoutY="108.0" onAction="#handlePlayButtonAction" text="Play/Pause" />
-      <Button fx:id="skipButton" layoutX="705.0" layoutY="108.0" onAction="#handleSkipButtonAction" text="Next" />
-      <ListView fx:id="fileList" layoutX="372.0" layoutY="263.0" prefHeight="258.0" prefWidth="200.0" style="-fx-background-color: grey;" />
-      <ListView fx:id="playList" layoutX="582.0" layoutY="263.0" onMouseClicked="#handlePlaylistDblClickAction" prefHeight="258.0" prefWidth="200.0" style="-fx-background-color: grey;" />
-      <Button fx:id="addButton" layoutX="472.0" layoutY="229.0" onAction="#handleAddButtonAction" text="Add to Playlist" />
-      <BarChart fx:id="chart" layoutX="28.0" layoutY="263.0" prefHeight="241.0" prefWidth="322.0">
+        <Button fx:id="prevButton" layoutX="707.0" layoutY="111.0" onAction="#handlePrevButtonAction" text="Prev" />
+        <Label fx:id="label" layoutX="167.0" layoutY="21.0" minHeight="16" minWidth="69" textFill="#ffffff66" />
+      <Button fx:id="playButton" layoutX="758.0" layoutY="111.0" onAction="#handlePlayButtonAction" text="Play/Pause" />
+      <Button fx:id="skipButton" layoutX="840.0" layoutY="111.0" onAction="#handleSkipButtonAction" text="Next" />
+      <ListView fx:id="fileList" layoutX="453.0" layoutY="273.0" prefHeight="266.0" prefWidth="227.0" style="-fx-background-color: grey;" />
+      <ListView fx:id="playList" layoutX="690.0" layoutY="273.0" onMouseClicked="#handlePlaylistDblClickAction" prefHeight="266.0" prefWidth="227.0" style="-fx-background-color: grey;" />
+      <Button fx:id="addButton" layoutX="544.0" layoutY="233.0" onAction="#handleAddButtonAction" text="Add to Playlist" />
+      <BarChart fx:id="chart" layoutX="14.0" layoutY="80.0" prefHeight="377.0" prefWidth="405.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
@@ -24,5 +26,18 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </BarChart>
+      <ImageView fx:id="AlbumImage" fitHeight="150.0" fitWidth="200.0" layoutX="457.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
+      <Button fx:id="ShuffleButton" layoutX="741.0" layoutY="163.0" onAction="#handleShuffleButtonAction" text="Shuffle" />
+      <Button fx:id="RepeatButton" layoutX="801.0" layoutY="163.0" onAction="#handleRepeatButtonAction" text="Repeat" />
+      <Button fx:id="DeleteButton" layoutX="638.0" layoutY="233.0" onAction="#handleDeleteButtonAction" text="Delete from Playlist" />
+      <Button fx:id="TrackUpButton" layoutX="759.0" layoutY="233.0" onAction="#handleTrackUpButtonAction" prefHeight="25.0" prefWidth="69.0" text="Track Up" />
+      <Button fx:id="TrackDownButton" layoutX="829.0" layoutY="233.0" onAction="#handleTrackDownButtonAction" text="Track Down" />
+      <Slider fx:id="TimeSlider" layoutX="122.0" layoutY="511.0" prefHeight="14.0" prefWidth="227.0" />
+      <Slider fx:id="VolumeSlider" layoutX="422.0" layoutY="459.0" orientation="VERTICAL" prefHeight="68.0" prefWidth="14.0" />
+      <Label fx:id="CurrentTimeLabel" layoutX="86.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
+      <Label fx:id="DurationLabel" layoutX="350.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
+      <Label fx:id="TrackNameLabel" alignment="CENTER" layoutX="735.0" layoutY="38.0" prefHeight="17.0" prefWidth="119.0" text="[Track Name]" textAlignment="CENTER" textFill="#b5b0ac" />
+      <Label fx:id="ArtistLabel" alignment="CENTER" layoutX="735.0" layoutY="54.0" prefHeight="17.0" prefWidth="119.0" text="[Artist Name]" textAlignment="CENTER" textFill="#b5b0ac" />
+      <Label fx:id="AlbumNameLabel" alignment="CENTER" layoutX="735.0" layoutY="71.0" prefHeight="17.0" prefWidth="119.0" text="[Album Name]" textFill="#b5b0ac" />
     </children>
 </AnchorPane>
