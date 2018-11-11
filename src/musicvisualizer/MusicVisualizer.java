@@ -12,16 +12,21 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author Personal
+*  @author Benjamin Wasserman
+ * @author Dan Sharp
+ * @author Tristan Hunter
  */
-public class MusicVisualizer extends Application {
+public class MusicVisualizer extends Application 
+{
     
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws Exception 
+    {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         
         Scene scene = new Scene(root);
+        
+        scene.getStylesheets().add(getClass().getResource("/Resource/GUIStyle.css").toExternalForm());
         
         stage.setScene(scene);
         stage.show();
@@ -30,7 +35,8 @@ public class MusicVisualizer extends Application {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         launch(args);
     }
     

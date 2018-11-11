@@ -1,0 +1,35 @@
+
+/** CSS **/
+#FilePathList {
+	-fx-border-color:grey;
+}
+
+#fileList{
+    -fx-border-color:white;
+    -fx-background-color:transparent;
+    -fx-border-width:0;
+}
+ 
+/* The main scrollbar CSS class of ListView */
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 0;
+    -fx-padding: 0;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-padding: 1;
+}
+
+.scroll-bar .decrement-arrow {
+    -fx-padding:0;
+ }
+.scroll-bar .increment-arrow {
+    -fx-padding:0;
+}
+

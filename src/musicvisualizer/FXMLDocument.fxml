@@ -15,7 +15,7 @@
         <Label fx:id="label" layoutX="167.0" layoutY="21.0" minHeight="16" minWidth="69" textFill="#ffffff66" />
       <Button fx:id="playButton" layoutX="758.0" layoutY="111.0" onAction="#handlePlayButtonAction" text="Play/Pause" />
       <Button fx:id="skipButton" layoutX="840.0" layoutY="111.0" onAction="#handleSkipButtonAction" text="Next" />
-      <ListView fx:id="fileList" layoutX="453.0" layoutY="273.0" prefHeight="266.0" prefWidth="227.0" style="-fx-background-color: grey;" />
+      <ListView fx:id="fileList" layoutX="453.0" layoutY="297.0" onMouseClicked="#handleFileListDblClickAction" prefHeight="242.0" prefWidth="227.0" style="-fx-background-color: grey; -fx-hbar-policy: never;" />
       <ListView fx:id="playList" layoutX="690.0" layoutY="273.0" onMouseClicked="#handlePlaylistDblClickAction" prefHeight="266.0" prefWidth="227.0" style="-fx-background-color: grey;" />
       <Button fx:id="addButton" layoutX="544.0" layoutY="233.0" onAction="#handleAddButtonAction" text="Add to Playlist" />
       <BarChart fx:id="chart" layoutX="14.0" layoutY="80.0" prefHeight="377.0" prefWidth="405.0">
@@ -39,5 +39,6 @@
       <Label fx:id="TrackNameLabel" alignment="CENTER" layoutX="735.0" layoutY="38.0" prefHeight="17.0" prefWidth="119.0" text="[Track Name]" textAlignment="CENTER" textFill="#b5b0ac" />
       <Label fx:id="ArtistLabel" alignment="CENTER" layoutX="735.0" layoutY="54.0" prefHeight="17.0" prefWidth="119.0" text="[Artist Name]" textAlignment="CENTER" textFill="#b5b0ac" />
       <Label fx:id="AlbumNameLabel" alignment="CENTER" layoutX="735.0" layoutY="71.0" prefHeight="17.0" prefWidth="119.0" text="[Album Name]" textFill="#b5b0ac" />
+      <ListView fx:id="filePathList" layoutX="453.0" layoutY="273.0" onMouseClicked="#handlePathListDblClickAction" orientation="HORIZONTAL" prefHeight="25.0" prefWidth="227.0" />
     </children>
 </AnchorPane>

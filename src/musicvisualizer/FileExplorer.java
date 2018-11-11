@@ -16,73 +16,123 @@ import javafx.collections.ObservableList;
  */
 public class FileExplorer
 {    
-    ObservableList<File> dirContents;
+    ObservableList<File> files;
+    ObservableList<File> childDirs;
     File curDir;
     
     // Initialize to user's music folder 
     public FileExplorer()
     {
         String username = System.getProperty("user.name");
-        System.out.println(username);
-        
         curDir = new File("C:\\Users\\" + username + "\\Music");
         
-        dirContents = FXCollections.observableArrayList();
-        dirContents.addAll(curDir.listFiles());
+        files = FXCollections.observableArrayList();
+        childDirs = FXCollections.observableArrayList();
+        openDirectory(curDir);
          
     }
     
+    // Go to a specified directory
     public void openDirectory(File newdir)
     {
         curDir = newdir;
-        dirContents.clear();
-        dirContents.addAll(curDir.listFiles());
+        files.clear();
+        childDirs.clear();
+        
+        // Check if directory has contents -- only update childDirs and files if not empty
+        if (curDir.listFiles() != null)
+        {
+            // Add all subdirectories to childDirs
+            childDirs.addAll(curDir.listFiles(File::isDirectory));
+            
+            // Remove hidden directories from childDirs
+            ObservableList<File> hiddenDirs = FXCollections.observableArrayList();
+            for (File dir : childDirs)
+            {
+                if (dir.isHidden())
+                {
+                    hiddenDirs.add(dir);
+                }
+            }
+            for (File dir : hiddenDirs)
+            {
+                childDirs.remove(dir);
+            }
+            
+            // Update list of files from new directory
+            files.addAll(curDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".wav")));
+            files.addAll(curDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".mp3")));
+        }
+    }
+    
+    // Go to parent directory n levels above curDir
+    public void upDirectory(int n)
+    {
+        for (int i=0; i<n; i++)
+            {
+                curDir = curDir.getParentFile();
+            }
+        
+        openDirectory(curDir);
     }
     
     
     //UTILITY FUNCTIONS FOR GUI CONTROLLER
     
-    // Return name strings of all items in current directory 
-    public ObservableList<String> GetAllNames()
+    // Return list of strings of directoy names up to current directory 
+    public ObservableList<String> getPathList()
     {
-        ObservableList<String> files = FXCollections.observableArrayList();
+        ObservableList<String> dirNames = FXCollections.observableArrayList();
+        File tempDir = curDir;
+        
+        while (tempDir != null) {
+            dirNames.add(0, tempDir.getName() + " \\");
+            tempDir = tempDir.getParentFile();
+        }
+        
+        dirNames.remove(0);
+        dirNames.add(0, "C:" + " \\");
+        return dirNames;
+    }
+    
+    // Return name strings of all files in current directory 
+    public ObservableList<String> getAllFileNames()
+    {
+        ObservableList<String> fileNames = FXCollections.observableArrayList();
        
-        for (File file : dirContents) {
+        for (File file : files) {
             if (file.isFile()) {
-                files.add(file.getName());
+                fileNames.add(file.getName());
             }
         }
         
-        return files;
+        return fileNames;
     }
     
-    
-    
-    // Return names strings of items at specific indices
-    public ObservableList<String> GetNamesAtIndices(ObservableList<Integer> indices)
+    // Return name strings of all folders in current directory 
+    public ObservableList<String> getAllDirNames()
     {
-        ObservableList<String> files = FXCollections.observableArrayList();
+        ObservableList<String> dirNames = FXCollections.observableArrayList();
        
-        for (int index : indices) 
+        for (File dir : childDirs) 
         {
-                files.add((dirContents.get(index)).getName());
+                dirNames.add(dir.getName());
         }
         
-        return files;
+        return dirNames;
     }
-    
     
     // Return list of Files objects at specific indices
-    public ObservableList<File> GetFilesAtIndices(ObservableList<Integer> indices)
+    public ObservableList<File> getFilesAtIndices(ObservableList<Integer> indices)
     {
-        ObservableList<File> files = FXCollections.observableArrayList();
+        ObservableList<File> filesAtIndices = FXCollections.observableArrayList();
        
         for (int index : indices) 
         {
-                files.add((dirContents.get(index)));
+                filesAtIndices.add((files.get(index)));
         }
         
-        return files;
+        return filesAtIndices;
     }
     
     

@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package musicvisualizer;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,13 +13,16 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 
 /**
  * @author Benjamin Wasserman
@@ -36,10 +35,15 @@ public class FXMLDocumentController implements Initializable
     Player player;
     Playlist playlist;
     
+    ObservableList<CustomListViewItem> fileListViewData = FXCollections.observableArrayList();
+    Integer numDir;
+    
     @FXML
     private Label label;
     @FXML
-    private ListView<String> fileList;
+    private ListView fileList;
+    @FXML
+    private ListView<String> filePathList;
     @FXML
     private ListView<String> playList;
     @FXML
@@ -84,11 +88,39 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleAddButtonAction(ActionEvent event) 
     {    
-        System.out.println("add to playlist");
+        // If index selected in file explorer is a valid file, add to new list for passing to playlist
         ObservableList<Integer> fileSelection = fileList.getSelectionModel().getSelectedIndices();
-        ObservableList<File> newfiles = fileExplorer.GetFilesAtIndices(fileSelection);
-        playlist.AddTracks(newfiles);
-        playList.getItems().setAll(playlist.GetNames());
+        
+        // Listview shows folders first, so subtract number of 
+        // folders from selected indices to get actual selected file indices  
+        Integer actualIndex;
+        ObservableList<Integer> subFileSelection = FXCollections.observableArrayList();
+        for (Integer index : fileSelection)
+        {
+            actualIndex = index - numDir;
+            // only add files, not directories
+            if (actualIndex >= 0)
+            {
+                subFileSelection.add(actualIndex);                
+            }
+        }
+        ObservableList<File> newfiles = fileExplorer.getFilesAtIndices(subFileSelection);
+        
+        // Filter out files that are already in playlist before adding
+        for (File file : playlist.tracks)
+        {
+            if (newfiles.contains(file))
+            {
+                newfiles.remove(file);
+            }
+        }
+        
+        // Add list of valid new files to playlist object and listview
+        if (newfiles.size() > 0)
+        {
+            playlist.AddTracks(newfiles);
+            playList.getItems().setAll(playlist.GetNames());
+        }
     }
     
     @FXML
@@ -168,14 +200,51 @@ public class FXMLDocumentController implements Initializable
         }    
     }
     
+    @FXML
+    private void handlePathListDblClickAction(MouseEvent event) 
+    {
+        if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) 
+        {
+            // Go to selected path in FileExplorer and update listviews
+            fileExplorer.upDirectory(-1 + filePathList.getItems().size() - filePathList.getSelectionModel().getSelectedIndex());
+            fileListViewData.clear();
+            updateFileExplorerListViews();
+        }    
+    }
+    
+    @FXML
+    private void handleFileListDblClickAction(MouseEvent event) 
+    {
+        if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) 
+        {
+            // Ignore double clicks on files
+            // If a directory is selected, open it and update file explorer
+            if (fileList.getSelectionModel().getSelectedIndex() < numDir)
+            {
+                fileExplorer.openDirectory(fileExplorer.childDirs.get(fileList.getSelectionModel().getSelectedIndex()));
+                fileListViewData.clear();
+                updateFileExplorerListViews();
+            }
+        }    
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) 
     {
-        
-        // Initialize FileExplorer object and populate listview
+        // Initialize FileExplorer
         fileExplorer = new FileExplorer();
-        fileList.setItems(fileExplorer.GetAllNames());
+   
+        // Configure and populate file explorer listviews
+        fileList.setItems(fileListViewData);
+        fileList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        fileList.setCellFactory(new Callback<ListView<CustomListViewItem>, ListCell<CustomListViewItem>>() {
+            @Override
+            public ListCell<CustomListViewItem> call(ListView<CustomListViewItem> listView)
+            {
+                return new CustomListViewCell();
+            }
+        });
+        updateFileExplorerListViews();
 
         // Initialize Playlist object and make listview empty
         playlist = new Playlist();
@@ -193,8 +262,7 @@ public class FXMLDocumentController implements Initializable
         });
         
         // Initialize metadata image
-        File file = new File("src/Vinyl.gif");
-        Image image = new Image(file.toURI().toString());
+        Image image = new Image("/Resource/Vinyl.gif");
         AlbumImage.setImage(image);
         
        // TODO: Initialize chart
@@ -204,5 +272,29 @@ public class FXMLDocumentController implements Initializable
         
     }    
 
+    private void updateFileExplorerListViews()
+    {
+        // Create custom items for directorys and add to fileListViewData 
+        numDir = 0;
+        for (String dir : fileExplorer.getAllDirNames())
+        {
+                CustomListViewItem ci = new CustomListViewItem();
+                ci.setString(dir);
+                ci.setLabelGlyph("/Resource/foldericon.gif");
+                fileListViewData.add(ci);
+                numDir++;
+        }
+        //... and repeat for each file
+        for (String filename : fileExplorer.getAllFileNames())
+        {
+                CustomListViewItem ci = new CustomListViewItem();
+                ci.setString(filename);
+                ci.setLabelGlyph("/Resource/musicicon.gif");
+                fileListViewData.add(ci);
+        }
+        // Populate path listview with items and scroll to end
+        filePathList.setItems(fileExplorer.getPathList());
+        filePathList.scrollTo(fileExplorer.getPathList().size());
+    }
     
 }
