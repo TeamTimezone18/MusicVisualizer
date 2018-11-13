@@ -105,17 +105,8 @@ public class FXMLDocumentController implements Initializable
             }
         }
         ObservableList<File> newfiles = fileExplorer.getFilesAtIndices(subFileSelection);
-        
-        // Filter out files that are already in playlist before adding
-        for (File file : playlist.tracks)
-        {
-            if (newfiles.contains(file))
-            {
-                newfiles.remove(file);
-            }
-        }
-        
-        // Add list of valid new files to playlist object and listview
+      
+        // If any files are selected, add them to end of playlist
         if (newfiles.size() > 0)
         {
             playlist.AddTracks(newfiles);
@@ -127,9 +118,9 @@ public class FXMLDocumentController implements Initializable
     private void handleDeleteButtonAction(ActionEvent event) 
     {
         // Get selected items and call playlist delete method, then update GUI
-        // ObservableList<Integer> playlistSelection = playList.getSelectionModel().getSelectedIndices();
-        // playlist.delTracks(playlistSelection)
-        // playList.getItems().setAll(playlist.GetNames());
+        ObservableList<Integer> playlistSelection = playList.getSelectionModel().getSelectedIndices();
+        playlist.delTracks(playlistSelection);
+        playList.getItems().setAll(playlist.GetNames());
         
         System.out.println("Delete button");
         label.setText("delete");
@@ -158,14 +149,30 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleTrackUpButtonAction(ActionEvent event) 
     {
-        System.out.println("Track up button");
+        if (playList.getSelectionModel().getSelectedIndex() > 0)
+        {
+            playlist.moveTrackUp(playList.getSelectionModel().getSelectedIndex());
+            playList.getItems().setAll(playlist.GetNames());
+            System.out.println("Track up button");
+        }
+        
         label.setText("move track up");
     }
     
     @FXML
     private void handleTrackDownButtonAction(ActionEvent event) 
     {
-        System.out.println("Track down button");
+        if (playList.getSelectionModel().getSelectedIndex() == -1)
+        {
+            return;
+        }
+       
+        if (playList.getSelectionModel().getSelectedIndex() < playList.getItems().size()-1)
+        {
+            playlist.moveTrackDown(playList.getSelectionModel().getSelectedIndex());
+            playList.getItems().setAll(playlist.GetNames());
+            System.out.println("Track Down button");
+        }
         label.setText("move track down");
     }
     
@@ -246,8 +253,9 @@ public class FXMLDocumentController implements Initializable
         });
         updateFileExplorerListViews();
 
-        // Initialize Playlist object and make listview empty
+        // Initialize Playlist object and configure listview
         playlist = new Playlist();
+        playList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             
         // Initialize Player object
         player = new Player();

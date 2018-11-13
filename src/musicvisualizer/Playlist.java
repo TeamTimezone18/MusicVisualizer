@@ -6,7 +6,7 @@
 package musicvisualizer;
 
 import java.io.*; 
-import java.util.*; 
+import java.util.Random; 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -20,6 +20,8 @@ public class Playlist {
     
     ObservableList<File> tracks;
     ObservableList<File> history;
+    File curTrack;
+    int curTrackIndex;
     MODE mode;
 
     enum MODE {NORMAL,SHUFFLE,REPEAT}
@@ -28,41 +30,101 @@ public class Playlist {
     {
         tracks = FXCollections.observableArrayList();
         history = FXCollections.observableArrayList();
+        curTrack = null;
+        curTrackIndex = 0;
         mode = MODE.NORMAL;
     }
     
     public void AddTracks(ObservableList<File> newtracks)
     {
-        //TODO: skip adding track that are already in the playlist
+        // Remove duplicates and add valid tracks to end
+        for (File file : tracks)
+        {
+            if (newtracks.contains(file))
+            {
+                newtracks.remove(file);
+            }
+        }   
         tracks.addAll(newtracks);
     }
     
-    /* TODO
+    
     public void delTracks(ObservableList<Integer> indices)
     {
-        
+        // Indices should be in increasing order
+        // Delete tracks last to first, one at a time
+        for (int i = indices.size()-1; i >= 0; i--)
+        {
+            File del = tracks.remove(indices.get(i).intValue());
+            System.out.println("DELETING FROM PLAYLIST: " + del);
+        }
     }
+    
     
     public void moveTrackUp(int index)
     {
-        
+        File toMove = tracks.get(index);
+        tracks.set(index, tracks.get(index-1));
+        tracks.set(index-1, toMove);
+        System.out.println(GetNames());
     }
     
+
     public void moveTrackDown(int index)
     {
-        
+        File toMove = tracks.get(index);
+        tracks.set(index, tracks.get(index+1));
+        tracks.set(index+1, toMove);
+        System.out.println(GetNames());
     }
     
+    /* Partially finished -- need to code shuffle (which needs history list)
     public File getNext()
     {
-        
+        File nextTrack = null;
+        if (tracks.size() > 0)
+        {
+            if (mode == MODE.NORMAL)
+            {
+                // Get next sequential track
+                curTrackIndex = curTrackIndex + 1;
+                if (curTrackIndex < tracks.size())
+                {
+                    System.out.println(curTrackIndex);
+                    nextTrack = tracks.get(curTrackIndex);
+                }
+                // or wrap to start at the end
+                else
+                {
+                    curTrackIndex = 0;
+                    curTrack = tracks.get(0);
+                    nextTrack = tracks.get(curTrackIndex);
+                }
+            }
+            else if (mode == MODE.SHUFFLE)
+            {
+                //TODO
+                Random rand = new Random();
+                int nextIndex;
+                while (nextTrack == null)
+                {
+                    nextIndex = rand.nextInt(tracks.size() - 1);
+                    //
+                }
+            }
+            else if (mode == MODE.REPEAT)
+            {
+                nextTrack = curTrack;
+            }
+        }
+        return nextTrack;
     }
     
+        /* TODO
     public File getLast()
     {
         
     }
-
     */
     
     
