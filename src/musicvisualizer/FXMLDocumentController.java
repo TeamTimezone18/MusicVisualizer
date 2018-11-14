@@ -132,7 +132,7 @@ public class FXMLDocumentController implements Initializable
         // Pass next file from playlist to player
         // player.playNew(playlist.getNext());
         
-        System.out.println("Skip button");
+        //player.PlayNew(playlist.getNext());
         label.setText("skip");
     }
 
@@ -142,7 +142,9 @@ public class FXMLDocumentController implements Initializable
         // Pass last file from playlist history to player
         // player.playNew(playlist.getLast());
         
-        System.out.println("Previous button");
+        
+       //player.PlayNew(playlist.getLast());
+        
         label.setText("previous");
     }
     
@@ -204,6 +206,7 @@ public class FXMLDocumentController implements Initializable
         if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) 
         {
             player.PlayNew(playlist.tracks.get(playList.getSelectionModel().getSelectedIndex()));
+            playlist.setCurTrack(playList.getSelectionModel().getSelectedIndex());
         }    
     }
     

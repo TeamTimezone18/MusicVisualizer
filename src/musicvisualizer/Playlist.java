@@ -35,6 +35,27 @@ public class Playlist {
         mode = MODE.NORMAL;
     }
     
+    public void setCurTrack(int index)
+    {
+        // if there are tracks in the list..
+        if (tracks.size() >=0)
+        {
+            //.. and if the index is valid
+            if (index >= 0 && index <= (tracks.size()-1))
+            {
+                // add track to history and set new
+                if (curTrack != null)
+                        {
+                            history.add(curTrack);
+                        }
+                curTrackIndex = index;
+                curTrack = tracks.get(index);
+            }
+        }
+       System.out.println("CURRENT TRACK SET: " + curTrack);
+       System.out.println("PLAYLIST HISTORY: " + history);
+    }
+    
     public void AddTracks(ObservableList<File> newtracks)
     {
         // Remove duplicates and add valid tracks to end
@@ -78,14 +99,16 @@ public class Playlist {
         System.out.println(GetNames());
     }
     
-    /* Partially finished -- need to code shuffle (which needs history list)
+    /*
     public File getNext()
     {
         File nextTrack = null;
-        if (tracks.size() > 0)
+        
+        if (tracks.size() > 0 && curTrack != null)
         {
             if (mode == MODE.NORMAL)
             {
+                history.add(curTrack);
                 // Get next sequential track
                 curTrackIndex = curTrackIndex + 1;
                 if (curTrackIndex < tracks.size())
@@ -103,13 +126,21 @@ public class Playlist {
             }
             else if (mode == MODE.SHUFFLE)
             {
-                //TODO
+                history.add(curTrack);
+                // Get random number that hasn't been played
                 Random rand = new Random();
                 int nextIndex;
                 while (nextTrack == null)
                 {
                     nextIndex = rand.nextInt(tracks.size() - 1);
-                    //
+                    if (history.contains(tracks.get(nextIndex)))
+                    {
+                        nextTrack = null;
+                    }
+                    else
+                    {
+                        nextTrack = tracks.get(nextIndex);
+                    }
                 }
             }
             else if (mode == MODE.REPEAT)
@@ -117,13 +148,17 @@ public class Playlist {
                 nextTrack = curTrack;
             }
         }
+        System.out.println("PLAY NEXT :" + nextTrack);
+        System.out.println("HISTORY: " + history);
         return nextTrack;
     }
     
-        /* TODO
+    
     public File getLast()
     {
-        
+        File lastTrack = history.get(history.size()-1);
+        history.remove(history.size()-1);
+        return lastTrack;
     }
     */
     
