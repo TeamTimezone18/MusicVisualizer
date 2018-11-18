@@ -35,25 +35,24 @@ public class Playlist {
         mode = MODE.NORMAL;
     }
     
+    public void setMode(String modeName)
+    {
+        mode = MODE.valueOf(modeName);
+    }
+    
     public void setCurTrack(int index)
     {
         // if there are tracks in the list..
-        if (tracks.size() >=0)
+        if (tracks.size() >= 0)
         {
-            //.. and if the index is valid
+            //.. and if the index is valid...
             if (index >= 0 && index <= (tracks.size()-1))
             {
-                // add track to history and set new
-                if (curTrack != null)
-                        {
-                            history.add(curTrack);
-                        }
+                // ... then update current track data
                 curTrackIndex = index;
                 curTrack = tracks.get(index);
             }
         }
-       System.out.println("CURRENT TRACK SET: " + curTrack);
-       System.out.println("PLAYLIST HISTORY: " + history);
     }
     
     public void AddTracks(ObservableList<File> newtracks)
@@ -72,12 +71,17 @@ public class Playlist {
     
     public void delTracks(ObservableList<Integer> indices)
     {
-        // Indices should be in increasing order
+        // Indices arg should be in increasing order
         // Delete tracks last to first, one at a time
         for (int i = indices.size()-1; i >= 0; i--)
         {
             File del = tracks.remove(indices.get(i).intValue());
-            System.out.println("DELETING FROM PLAYLIST: " + del);
+            
+            // remove all instances of deleted track in history too
+            while (history.contains(del))
+            {
+                history.remove(del);
+            }
         }
     }
     
@@ -87,7 +91,6 @@ public class Playlist {
         File toMove = tracks.get(index);
         tracks.set(index, tracks.get(index-1));
         tracks.set(index-1, toMove);
-        System.out.println(GetNames());
     }
     
 
@@ -96,71 +99,84 @@ public class Playlist {
         File toMove = tracks.get(index);
         tracks.set(index, tracks.get(index+1));
         tracks.set(index+1, toMove);
-        System.out.println(GetNames());
     }
     
-    /*
+    
     public File getNext()
     {
         File nextTrack = null;
+        int nextIndex = -1;
         
         if (tracks.size() > 0 && curTrack != null)
         {
             if (mode == MODE.NORMAL)
             {
-                history.add(curTrack);
-                // Get next sequential track
-                curTrackIndex = curTrackIndex + 1;
-                if (curTrackIndex < tracks.size())
+                // Get next sequential track or wrap to start
+                nextIndex = curTrackIndex + 1;
+                if (nextIndex >= tracks.size())
                 {
-                    System.out.println(curTrackIndex);
-                    nextTrack = tracks.get(curTrackIndex);
-                }
-                // or wrap to start at the end
-                else
-                {
-                    curTrackIndex = 0;
-                    curTrack = tracks.get(0);
-                    nextTrack = tracks.get(curTrackIndex);
+                    nextIndex = 0;
                 }
             }
             else if (mode == MODE.SHUFFLE)
             {
-                history.add(curTrack);
-                // Get random number that hasn't been played
+                // Get random number that isn't the current track index
                 Random rand = new Random();
-                int nextIndex;
-                while (nextTrack == null)
+                nextIndex = rand.nextInt(tracks.size());
+                while (nextIndex == curTrackIndex)
                 {
-                    nextIndex = rand.nextInt(tracks.size() - 1);
-                    if (history.contains(tracks.get(nextIndex)))
-                    {
-                        nextTrack = null;
-                    }
-                    else
-                    {
-                        nextTrack = tracks.get(nextIndex);
-                    }
+                    nextIndex = rand.nextInt(tracks.size());
                 }
+                
+                /*  logic to prevent repeating tracks if new tracks exist
+                    breaks after entire playlist is played once
+                while (nextIndex == -1)
+                {
+                    nextIndex = rand.nextInt(tracks.size());
+                    if (nextIndex == curTrackIndex || history.contains(tracks.get(nextIndex)))
+                    {
+                        nextIndex = -1;
+                    }
+                }*/
+                
             }
             else if (mode == MODE.REPEAT)
             {
-                nextTrack = curTrack;
+                nextIndex = curTrackIndex;
             }
         }
-        System.out.println("PLAY NEXT :" + nextTrack);
-        System.out.println("HISTORY: " + history);
+        
+        if (nextIndex >= 0)
+        {
+            if (curTrack != null)
+            {
+                history.add(curTrack);
+            }
+        
+            setCurTrack(nextIndex);
+            nextTrack = tracks.get(curTrackIndex);
+        }
+        
         return nextTrack;
     }
     
     
     public File getLast()
     {
-        File lastTrack = history.get(history.size()-1);
-        history.remove(history.size()-1);
+        File lastTrack = null;
+        int lastIndex = -1;
+        
+        if(!history.isEmpty())
+        {
+            lastTrack = history.get(history.size()-1);
+            lastIndex = tracks.indexOf(lastTrack);
+            history.remove(history.size()-1);
+            setCurTrack(lastIndex);
+        }
+        
         return lastTrack;
     }
-    */
+    
     
     
     // UTILITY FUNCTIONS FOR GUI CONTROLLER

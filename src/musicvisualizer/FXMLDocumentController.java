@@ -130,9 +130,13 @@ public class FXMLDocumentController implements Initializable
     private void handleSkipButtonAction(ActionEvent event) 
     {
         // Pass next file from playlist to player
-        // player.playNew(playlist.getNext());
+        File newTrack = playlist.getNext();
         
-        //player.PlayNew(playlist.getNext());
+        if (newTrack != null)
+        {
+            player.PlayNew(newTrack);
+        }
+        
         label.setText("skip");
     }
 
@@ -140,10 +144,12 @@ public class FXMLDocumentController implements Initializable
     private void handlePrevButtonAction(ActionEvent event) 
     {
         // Pass last file from playlist history to player
-        // player.playNew(playlist.getLast());
+        File newTrack = playlist.getLast();
         
-        
-       //player.PlayNew(playlist.getLast());
+        if (newTrack != null)
+        {
+            player.PlayNew(newTrack);
+        }
         
         label.setText("previous");
     }
@@ -182,15 +188,15 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleShuffleButtonAction(ActionEvent event) 
     {
-        System.out.println("Shuffle button");
         label.setText("shuffle");
+        playlist.setMode("SHUFFLE");
     }
     
     @FXML
     private void handleRepeatButtonAction(ActionEvent event) 
     {
-        System.out.println("Repeat button");
         label.setText("repeat");
+        playlist.setMode("REPEAT");
     }
 
         @FXML

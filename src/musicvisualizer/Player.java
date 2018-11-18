@@ -28,9 +28,13 @@ public class Player {
     
     public void PlayNew(File newtrack)
     {
-        track = newtrack;
+        // If there is a track playing, stop it before starting next
+        if(track != null)
+        {
+            mp.stop();
+        }
         
-        //TODO: Stop and release old player before making a new one
+        track = newtrack;
         
         String uriString = track.toURI().toString();
         mp = new MediaPlayer(new Media(uriString));
@@ -41,13 +45,16 @@ public class Player {
     {
         //TODO: make sure player exists before trying to play/pause
         
-        if (mp.getStatus() == Status.PAUSED)
+        if(track != null)
         {
-            mp.play();
-        }
-        else if (mp.getStatus() == Status.PLAYING)
-        {
-            mp.pause(); 
+            if (mp.getStatus() == Status.PAUSED)
+            {
+                mp.play();
+            }
+            else if (mp.getStatus() == Status.PLAYING)
+            {
+                mp.pause(); 
+            }
         }
     }
     
