@@ -8,6 +8,8 @@ package musicvisualizer;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 /**
  *
@@ -19,9 +21,7 @@ public class CustomListViewItem
     
     public void setLabelGlyph(String imgName)
     {
-        
-         Image image = new Image(getClass().getResourceAsStream(imgName));
-        //FontAwesome fa = new FontAwesome();
+        Image image = new Image(getClass().getResourceAsStream(imgName));
         label.setGraphic(new ImageView(image));
     }
 
@@ -30,6 +30,16 @@ public class CustomListViewItem
         label.setText(string);
     }
 
+    public void setBold()
+    {
+        label.setFont(Font.font("", FontWeight.BOLD, 12));
+    }
+    
+    public void setNormal()
+    {
+        label.setFont(Font.font("", FontWeight.NORMAL, 12));
+    }
+    
     public Label getLabel()
     {
         return label;

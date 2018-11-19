@@ -35,6 +35,7 @@ public class FXMLDocumentController implements Initializable
     Player player;
     Playlist playlist;
     
+    ObservableList<CustomListViewItem> playListData = FXCollections.observableArrayList();
     ObservableList<CustomListViewItem> fileListViewData = FXCollections.observableArrayList();
     Integer numDir;
     
@@ -45,7 +46,7 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private ListView<String> filePathList;
     @FXML
-    private ListView<String> playList;
+    private ListView playList;
     @FXML
     private AnchorPane anchorPane;
     @FXML
@@ -110,7 +111,7 @@ public class FXMLDocumentController implements Initializable
         if (newfiles.size() > 0)
         {
             playlist.AddTracks(newfiles);
-            playList.getItems().setAll(playlist.GetNames());
+            updatePlaylistListView();
         }
     }
     
@@ -120,9 +121,8 @@ public class FXMLDocumentController implements Initializable
         // Get selected items and call playlist delete method, then update GUI
         ObservableList<Integer> playlistSelection = playList.getSelectionModel().getSelectedIndices();
         playlist.delTracks(playlistSelection);
-        playList.getItems().setAll(playlist.GetNames());
+        updatePlaylistListView();
         
-        System.out.println("Delete button");
         label.setText("delete");
     }
     
@@ -135,6 +135,7 @@ public class FXMLDocumentController implements Initializable
         if (newTrack != null)
         {
             player.PlayNew(newTrack);
+            updatePlaylistCurTrackItem();
         }
         
         label.setText("skip");
@@ -149,6 +150,7 @@ public class FXMLDocumentController implements Initializable
         if (newTrack != null)
         {
             player.PlayNew(newTrack);
+            updatePlaylistCurTrackItem();
         }
         
         label.setText("previous");
@@ -157,11 +159,12 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleTrackUpButtonAction(ActionEvent event) 
     {
-        if (playList.getSelectionModel().getSelectedIndex() > 0)
+        int selectedIndex = playList.getSelectionModel().getSelectedIndex();
+        if (selectedIndex > 0)
         {
-            playlist.moveTrackUp(playList.getSelectionModel().getSelectedIndex());
-            playList.getItems().setAll(playlist.GetNames());
-            System.out.println("Track up button");
+            playlist.moveTrackUp(selectedIndex);
+            updatePlaylistListView();
+            playList.getSelectionModel().select(selectedIndex-1);
         }
         
         label.setText("move track up");
@@ -170,16 +173,18 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleTrackDownButtonAction(ActionEvent event) 
     {
-        if (playList.getSelectionModel().getSelectedIndex() == -1)
+        int selectedIndex = playList.getSelectionModel().getSelectedIndex();
+        
+        if (selectedIndex < 0)
         {
             return;
         }
        
-        if (playList.getSelectionModel().getSelectedIndex() < playList.getItems().size()-1)
+        if (selectedIndex < playList.getItems().size()-1)
         {
-            playlist.moveTrackDown(playList.getSelectionModel().getSelectedIndex());
-            playList.getItems().setAll(playlist.GetNames());
-            System.out.println("Track Down button");
+            playlist.moveTrackDown(selectedIndex);
+            updatePlaylistListView();
+            playList.getSelectionModel().select(selectedIndex+1);
         }
         label.setText("move track down");
     }
@@ -213,6 +218,7 @@ public class FXMLDocumentController implements Initializable
         {
             player.PlayNew(playlist.tracks.get(playList.getSelectionModel().getSelectedIndex()));
             playlist.setCurTrack(playList.getSelectionModel().getSelectedIndex());
+            updatePlaylistCurTrackItem();
         }    
     }
     
@@ -264,7 +270,16 @@ public class FXMLDocumentController implements Initializable
 
         // Initialize Playlist object and configure listview
         playlist = new Playlist();
+        playList.setItems(playListData);
         playList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        playList.setCellFactory(new Callback<ListView<CustomListViewItem>, ListCell<CustomListViewItem>>() {
+            @Override
+            public ListCell<CustomListViewItem> call(ListView<CustomListViewItem> listView)
+            {
+                return new CustomListViewCell();
+            }
+        });
+        updatePlaylistListView();
             
         // Initialize Player object
         player = new Player();
@@ -312,6 +327,37 @@ public class FXMLDocumentController implements Initializable
         // Populate path listview with items and scroll to end
         filePathList.setItems(fileExplorer.getPathList());
         filePathList.scrollTo(fileExplorer.getPathList().size());
+    }
+    
+    private void updatePlaylistListView()
+    {
+        playListData.clear();
+        int ctr = 0;
+        for (String track : playlist.GetNames())
+        {
+            CustomListViewItem ci = new CustomListViewItem();
+            ci.setString(track);
+            ctr++;
+            playListData.add(ci);
+        }
+        updatePlaylistCurTrackItem();
+    }
+    
+    private void updatePlaylistCurTrackItem()
+    {
+        int ctr = 0;
+        for (CustomListViewItem item : playListData)
+        {
+            if (ctr != playlist.curTrackIndex)
+            {
+                item.setNormal();
+            }
+            else
+            {
+                item.setBold();
+            }
+            ctr++;
+        }
     }
     
 }

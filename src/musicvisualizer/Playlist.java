@@ -31,7 +31,7 @@ public class Playlist {
         tracks = FXCollections.observableArrayList();
         history = FXCollections.observableArrayList();
         curTrack = null;
-        curTrackIndex = 0;
+        curTrackIndex = -1;
         mode = MODE.NORMAL;
     }
     
@@ -42,16 +42,24 @@ public class Playlist {
     
     public void setCurTrack(int index)
     {
-        // if there are tracks in the list..
-        if (tracks.size() >= 0)
+        if (tracks.size() < 0)
         {
-            //.. and if the index is valid...
-            if (index >= 0 && index <= (tracks.size()-1))
-            {
-                // ... then update current track data
-                curTrackIndex = index;
-                curTrack = tracks.get(index);
-            }
+            // no tracks to set as current
+            return;
+        }
+        
+        // if the index is valid...
+        if (index >= 0 && index <= (tracks.size()-1))
+        {
+            // ... then update current track data
+            curTrackIndex = index;
+            curTrack = tracks.get(index);
+        }
+        else
+        {
+            // set to defaults
+            curTrackIndex = -1;
+            curTrack = null;
         }
     }
     
@@ -82,15 +90,32 @@ public class Playlist {
             {
                 history.remove(del);
             }
+            
+            // if deleting the current track, set curTrack to default null
+            if (indices.get(i).intValue() == curTrackIndex)
+            {
+                setCurTrack(-1);
+            }
+            
         }
+        
+        //update index of curTrack
+        curTrackIndex = tracks.indexOf(curTrack);
+        
     }
-    
     
     public void moveTrackUp(int index)
     {
         File toMove = tracks.get(index);
         tracks.set(index, tracks.get(index-1));
         tracks.set(index-1, toMove);
+        
+        // if we're moving the current track, update it's index
+        if (index == curTrackIndex && curTrack != null)
+        {
+            curTrackIndex = tracks.indexOf(curTrack);
+        }
+        
     }
     
 
@@ -99,6 +124,13 @@ public class Playlist {
         File toMove = tracks.get(index);
         tracks.set(index, tracks.get(index+1));
         tracks.set(index+1, toMove);
+        
+        // if we're moving the current track, update it's index
+        if (index == curTrackIndex && curTrack != null)
+        {
+            curTrackIndex = tracks.indexOf(curTrack);
+        }
+        
     }
     
     
