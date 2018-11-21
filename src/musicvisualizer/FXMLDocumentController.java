@@ -302,14 +302,21 @@ public class FXMLDocumentController implements Initializable
         TimeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                if (TimeSlider.isValueChanging()) {
-               // multiply duration by percentage calculated by slider position
                   player.setTime(TimeSlider.getValue());
                }
             }
         });
         
-        VolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            label.setText("Vol: " + Double.toString(newValue.intValue()));
+        VolumeSlider.setValue(100);
+        VolumeSlider.valueProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+               if (VolumeSlider.isValueChanging()) {
+                   if (player.mp != null)
+                   {
+                       player.mp.setVolume(VolumeSlider.getValue() / 100.0);
+                   }
+               }
+            }
         });
         
         // Initialize metadata image
@@ -384,6 +391,7 @@ public class FXMLDocumentController implements Initializable
     {
         player.PlayNew(newFile);
         updatePlaylistCurTrackItem();
+        player.mp.setVolume(VolumeSlider.getValue() / 100.0);
                 
         player.mp.currentTimeProperty().addListener(new InvalidationListener() 
         {
