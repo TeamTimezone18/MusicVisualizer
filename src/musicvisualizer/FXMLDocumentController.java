@@ -3,6 +3,11 @@ package musicvisualizer;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -134,8 +139,7 @@ public class FXMLDocumentController implements Initializable
         
         if (newTrack != null)
         {
-            player.PlayNew(newTrack);
-            updatePlaylistCurTrackItem();
+            playNewTrack(newTrack);
         }
         
         label.setText("skip");
@@ -149,8 +153,7 @@ public class FXMLDocumentController implements Initializable
         
         if (newTrack != null)
         {
-            player.PlayNew(newTrack);
-            updatePlaylistCurTrackItem();
+            playNewTrack(newTrack);
         }
         
         label.setText("previous");
@@ -216,9 +219,15 @@ public class FXMLDocumentController implements Initializable
     {
         if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) 
         {
-            player.PlayNew(playlist.tracks.get(playList.getSelectionModel().getSelectedIndex()));
-            playlist.setCurTrack(playList.getSelectionModel().getSelectedIndex());
-            updatePlaylistCurTrackItem();
+            int selIndex = playList.getSelectionModel().getSelectedIndex();
+            if (selIndex >= 0)
+            {
+                File newTrack = playlist.tracks.get(selIndex);
+                playlist.setCurTrack(selIndex);
+                playNewTrack(newTrack);
+                
+                        
+            }
         }    
     }
     
@@ -227,10 +236,14 @@ public class FXMLDocumentController implements Initializable
     {
         if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) 
         {
-            // Go to selected path in FileExplorer and update listviews
-            fileExplorer.upDirectory(-1 + filePathList.getItems().size() - filePathList.getSelectionModel().getSelectedIndex());
-            fileListViewData.clear();
-            updateFileExplorerListViews();
+            int selIndex = filePathList.getSelectionModel().getSelectedIndex();
+            if (selIndex >= 0)
+            {
+                // Go to selected path in FileExplorer and update listviews
+                fileExplorer.upDirectory(-1 + filePathList.getItems().size() - filePathList.getSelectionModel().getSelectedIndex());
+                fileListViewData.clear();
+                updateFileExplorerListViews();
+            }
         }    
     }
     
@@ -241,7 +254,8 @@ public class FXMLDocumentController implements Initializable
         {
             // Ignore double clicks on files
             // If a directory is selected, open it and update file explorer
-            if (fileList.getSelectionModel().getSelectedIndex() < numDir)
+            int selIndex = fileList.getSelectionModel().getSelectedIndex();
+            if (selIndex >= 0 && selIndex < numDir)
             {
                 fileExplorer.openDirectory(fileExplorer.childDirs.get(fileList.getSelectionModel().getSelectedIndex()));
                 fileListViewData.clear();
@@ -285,10 +299,15 @@ public class FXMLDocumentController implements Initializable
         player = new Player();
         
         // Initialize slider listeners
-        TimeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            CurrentTimeLabel.setText(Double.toString(newValue.intValue()));
+        TimeSlider.valueProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+               if (TimeSlider.isValueChanging()) {
+               // multiply duration by percentage calculated by slider position
+                  player.setTime(TimeSlider.getValue());
+               }
+            }
         });
-            
+        
         VolumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             label.setText("Vol: " + Double.toString(newValue.intValue()));
         });
@@ -297,10 +316,13 @@ public class FXMLDocumentController implements Initializable
         Image image = new Image("/Resource/Vinyl.gif");
         AlbumImage.setImage(image);
         
-       // TODO: Initialize chart
+        // Initialize bindings to track properties
+        ArtistLabel.textProperty().bind(player.track.artist);
+        AlbumNameLabel.textProperty().bind(player.track.album);
+        TrackNameLabel.textProperty().bind(player.track.title);
+        DurationLabel.textProperty().bind(player.track.durationString);
+        CurrentTimeLabel.textProperty().bind(player.track.playbackTime);
         
-       // TODO: Initialize listener on a player attribute to update chart, time labels/slider -- not sure how to do this
-       
         
     }    
 
@@ -332,12 +354,10 @@ public class FXMLDocumentController implements Initializable
     private void updatePlaylistListView()
     {
         playListData.clear();
-        int ctr = 0;
         for (String track : playlist.GetNames())
         {
             CustomListViewItem ci = new CustomListViewItem();
             ci.setString(track);
-            ctr++;
             playListData.add(ci);
         }
         updatePlaylistCurTrackItem();
@@ -358,6 +378,23 @@ public class FXMLDocumentController implements Initializable
             }
             ctr++;
         }
+    }
+    
+    private void playNewTrack(File newFile)
+    {
+        player.PlayNew(newFile);
+        updatePlaylistCurTrackItem();
+                
+        player.mp.currentTimeProperty().addListener(new InvalidationListener() 
+        {
+            public void invalidated(Observable ov) 
+            {
+                if (!TimeSlider.isValueChanging())
+                {
+                    TimeSlider.setValue(player.track.progress.doubleValue());
+                }
+            }
+        });
     }
     
 }

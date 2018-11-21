@@ -40,6 +40,7 @@ public class Playlist {
         mode = MODE.valueOf(modeName);
     }
     
+    
     public void setCurTrack(int index)
     {
         if (tracks.size() < 0)
@@ -51,7 +52,12 @@ public class Playlist {
         // if the index is valid...
         if (index >= 0 && index <= (tracks.size()-1))
         {
-            // ... then update current track data
+            // ... then update history and set new current track
+            
+            if (curTrack != null)
+            {
+                history.add(curTrack);
+            }
             curTrackIndex = index;
             curTrack = tracks.get(index);
         }
@@ -111,11 +117,13 @@ public class Playlist {
         tracks.set(index-1, toMove);
         
         // if we're moving the current track, update it's index
-        if (index == curTrackIndex && curTrack != null)
+        if (curTrack != null)
         {
-            curTrackIndex = tracks.indexOf(curTrack);
+            if (index == curTrackIndex || index == curTrackIndex+1) 
+            {
+                curTrackIndex = tracks.indexOf(curTrack);
+            }
         }
-        
     }
     
 
@@ -126,11 +134,13 @@ public class Playlist {
         tracks.set(index+1, toMove);
         
         // if we're moving the current track, update it's index
-        if (index == curTrackIndex && curTrack != null)
+        if (curTrack != null)
         {
-            curTrackIndex = tracks.indexOf(curTrack);
+            if (index == curTrackIndex || index == curTrackIndex-1) 
+            {
+                curTrackIndex = tracks.indexOf(curTrack);
+            }
         }
-        
     }
     
     
@@ -180,11 +190,6 @@ public class Playlist {
         
         if (nextIndex >= 0)
         {
-            if (curTrack != null)
-            {
-                history.add(curTrack);
-            }
-        
             setCurTrack(nextIndex);
             nextTrack = tracks.get(curTrackIndex);
         }
@@ -204,6 +209,7 @@ public class Playlist {
             lastIndex = tracks.indexOf(lastTrack);
             history.remove(history.size()-1);
             setCurTrack(lastIndex);
+            history.remove(history.size()-1); //delete prior track from history
         }
         
         return lastTrack;
