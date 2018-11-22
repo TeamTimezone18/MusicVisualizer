@@ -211,7 +211,10 @@ public class FXMLDocumentController implements Initializable
     private void handlePlayButtonAction(ActionEvent event) 
     {
         System.out.println("play/pause button");    
-        player.PlayPause();
+        if (player.mp != null)
+        {
+            player.PlayPause();
+        }
     }
     
     @FXML
@@ -299,12 +302,17 @@ public class FXMLDocumentController implements Initializable
         player = new Player();
         
         // Initialize slider listeners
+        TimeSlider.disableProperty().set(true);
         TimeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                if (TimeSlider.isValueChanging()) {
-                  player.setTime(TimeSlider.getValue());
+                        player.mp.pause();
+                        player.setTime(TimeSlider.getValue());
                }
             }
+        });
+        TimeSlider.setOnMouseReleased(event -> {
+            player.mp.play();
         });
         
         VolumeSlider.setValue(100);
@@ -318,6 +326,8 @@ public class FXMLDocumentController implements Initializable
                }
             }
         });
+        
+        
         
         // Initialize metadata image
         Image image = new Image("/Resource/Vinyl.gif");
@@ -392,6 +402,7 @@ public class FXMLDocumentController implements Initializable
         player.PlayNew(newFile);
         updatePlaylistCurTrackItem();
         player.mp.setVolume(VolumeSlider.getValue() / 100.0);
+        TimeSlider.disableProperty().set(false);
                 
         player.mp.currentTimeProperty().addListener(new InvalidationListener() 
         {
@@ -403,6 +414,14 @@ public class FXMLDocumentController implements Initializable
                 }
             }
         });
+        
+        player.mp.setOnEndOfMedia(new Runnable() {
+            public void run() 
+            {
+                handleSkipButtonAction(null);
+            }
+       });
+        
     }
     
 }
