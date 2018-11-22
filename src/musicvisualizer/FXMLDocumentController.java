@@ -196,15 +196,32 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleShuffleButtonAction(ActionEvent event) 
     {
-        label.setText("shuffle");
-        playlist.setMode("SHUFFLE");
+        if (playlist.mode.toString().equals("SHUFFLE"))
+        {
+            label.setText("shuffle off");
+            playlist.setMode("NORMAL");
+        }
+        else
+        {
+            label.setText("shuffle on");
+            playlist.setMode("SHUFFLE");
+        }
     }
     
     @FXML
     private void handleRepeatButtonAction(ActionEvent event) 
     {
-        label.setText("repeat");
-        playlist.setMode("REPEAT");
+        
+        if (playlist.mode.toString().equals("REPEAT"))
+        {
+            label.setText("repeat off");
+            playlist.setMode("NORMAL");
+        }
+        else
+        {
+            label.setText("repeat on");
+            playlist.setMode("REPEAT");
+        }
     }
 
         @FXML
