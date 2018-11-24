@@ -17,6 +17,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
+import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Duration;
 
 /**
@@ -29,10 +30,18 @@ public class Player {
     
     MediaPlayer mp;
     Track track;
+    private AudioSpectrumListener audioSpectrumListener;
     
     public Player()
     {
         track  = new Track();
+        
+        audioSpectrumListener = (double timestamp, double duration,
+                                 float[] magnitudes, float[] phases) -> 
+        {
+            track.updateMagnitudes(magnitudes); 
+        };
+        
     }
     
     public void PlayNew(File newTrack)
@@ -61,6 +70,11 @@ public class Player {
               }
             }
           });
+        
+        // listen for frequency data
+        mp.setAudioSpectrumListener(audioSpectrumListener);
+        mp.setAudioSpectrumThreshold(-100);
+        
         
         // Listen for duration changes
         mp.totalDurationProperty().addListener(new InvalidationListener() 
@@ -133,6 +147,15 @@ public class Player {
             durationString = new SimpleStringProperty();
             durationString.set("0:00");
             duration = Duration.UNKNOWN;
+            
+        }
+        
+        private void updateMagnitudes(float[] magnitudes)
+        {
+            for (float mag : magnitudes)
+            {
+                System.out.println(mag-mp.getAudioSpectrumThreshold());
+            }
             
         }
         
