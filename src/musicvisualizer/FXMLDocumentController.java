@@ -3,6 +3,9 @@ package musicvisualizer;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -11,9 +14,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
@@ -27,7 +33,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.util.Callback;
+import javafx.util.Duration;
 
 /**
  * @author Benjamin Wasserman
@@ -43,6 +51,12 @@ public class FXMLDocumentController implements Initializable
     ObservableList<CustomListViewItem> playListData = FXCollections.observableArrayList();
     ObservableList<CustomListViewItem> fileListViewData = FXCollections.observableArrayList();
     Integer numDir;
+    
+    CategoryAxis xAxis = new CategoryAxis();
+    NumberAxis yAxis = new NumberAxis();
+    BarChart.Series spectrumDataSeries = new BarChart.Series();
+    final int NUMBARS = 128;  // number of bars in the barchart
+    final int UPDATERATE = 20; // refresh rate in hertz
     
     @FXML
     private Label label;
@@ -344,7 +358,39 @@ public class FXMLDocumentController implements Initializable
             }
         });
         
+        // setup the animation timeline and data for the chart
+        // chart aesthetic settings could be in css file
+        chart.setAnimated(false);
+        chart.setHorizontalGridLinesVisible(false);
+        chart.setVerticalGridLinesVisible(false);
+        chart.setLegendVisible(false);
+        yAxis.setOpacity(0);
         
+        Timeline animation = new Timeline();
+        animation.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATERATE), new    EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent actionEvent) {
+                
+              //update graph
+              Integer index = 0;
+              for (Float value : player.track.spectrumData)
+              {
+                  spectrumDataSeries.getData().set(index,(new XYChart.Data(index.toString(), value.floatValue())));
+                  index++;
+              }
+              
+        }
+        }));
+        animation.setCycleCount(Animation.INDEFINITE);
+        animation.play();
+        
+        
+        float init = 0;
+        for (Integer i =0; i<NUMBARS;i++ )
+        {
+            spectrumDataSeries.getData().add(new XYChart.Data(i.toString(), init));
+        }
+        chart.getData().addAll(spectrumDataSeries);
+
         
         // Initialize metadata image
         Image image = new Image("/Resource/Vinyl.gif");
@@ -420,7 +466,9 @@ public class FXMLDocumentController implements Initializable
         updatePlaylistCurTrackItem();
         player.mp.setVolume(VolumeSlider.getValue() / 100.0);
         TimeSlider.disableProperty().set(false);
-                
+        player.mp.setAudioSpectrumInterval((1.0/UPDATERATE));
+        player.mp.setAudioSpectrumNumBands(NUMBARS);
+        
         player.mp.currentTimeProperty().addListener(new InvalidationListener() 
         {
             public void invalidated(Observable ov) 

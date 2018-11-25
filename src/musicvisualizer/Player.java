@@ -12,11 +12,12 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableList;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Duration;
 
@@ -130,6 +131,8 @@ public class Player {
         public StringProperty durationString;
         public DoubleProperty progress; // 0-100 -- current time percentage of duration
         Duration duration;
+        public ObservableList<Float> spectrumData = FXCollections.observableArrayList();
+        int NUMBARS = 128;  // size of spectrum data
         
         public Track()
         {
@@ -148,13 +151,21 @@ public class Player {
             durationString.set("0:00");
             duration = Duration.UNKNOWN;
             
+            for(int i = 0; i<NUMBARS; i++)
+            {
+                spectrumData.add(new Float(0));
+            }
+            
         }
         
         private void updateMagnitudes(float[] magnitudes)
         {
+            int i = 0;
             for (float mag : magnitudes)
             {
-                System.out.println(mag-mp.getAudioSpectrumThreshold());
+                Float magnitude = new Float(mag-mp.getAudioSpectrumThreshold());
+                spectrumData.set(i, magnitude);
+                i++;
             }
             
         }
