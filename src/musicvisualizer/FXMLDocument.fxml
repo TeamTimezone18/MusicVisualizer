@@ -9,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="564.0" prefWidth="937.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicvisualizer.FXMLDocumentController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" onKeyPressed="#keyListener" prefHeight="564.0" prefWidth="937.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicvisualizer.FXMLDocumentController">
     <children>
         <Button fx:id="prevButton" layoutX="707.0" layoutY="111.0" onAction="#handlePrevButtonAction" text="Prev" />
         <Label fx:id="label" layoutX="167.0" layoutY="21.0" minHeight="16" minWidth="69" textFill="#ffffff66" />
@@ -30,7 +30,7 @@
       <Button fx:id="DeleteButton" layoutX="638.0" layoutY="233.0" onAction="#handleDeleteButtonAction" text="Delete from Playlist" />
       <Button fx:id="TrackUpButton" layoutX="759.0" layoutY="233.0" onAction="#handleTrackUpButtonAction" prefHeight="25.0" prefWidth="69.0" text="Track Up" />
       <Button fx:id="TrackDownButton" layoutX="829.0" layoutY="233.0" onAction="#handleTrackDownButtonAction" text="Track Down" />
-      <Slider fx:id="TimeSlider" layoutX="122.0" layoutY="511.0" prefHeight="14.0" prefWidth="227.0" />
+      <Slider fx:id="TimeSlider" blockIncrement="1.0" layoutX="122.0" layoutY="511.0" majorTickUnit="1.0" minorTickCount="1" onKeyPressed="#keyListener" prefHeight="14.0" prefWidth="227.0" />
       <Slider fx:id="VolumeSlider" layoutX="422.0" layoutY="459.0" orientation="VERTICAL" prefHeight="68.0" prefWidth="14.0" />
       <Label fx:id="CurrentTimeLabel" layoutX="86.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
       <Label fx:id="DurationLabel" layoutX="350.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
@@ -41,13 +41,13 @@
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="192.0" prefWidth="210.0">
                <children>
-                  <ListView fx:id="fileList" layoutX="-72.0" layoutY="23.0" onMouseClicked="#handleFileListDblClickAction" prefHeight="266.0" prefWidth="234.0" style="-fx-background-color: grey; -fx-hbar-policy: never;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="23.0" />
+                  <ListView fx:id="fileList" layoutX="-72.0" layoutY="23.0" onKeyPressed="#keyListener" onMouseClicked="#handleFileListDblClickAction" prefHeight="266.0" prefWidth="234.0" style="-fx-background-color: grey; -fx-hbar-policy: never;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="23.0" />
                   <ListView fx:id="filePathList" layoutX="-1.0" layoutY="-2.0" onMouseClicked="#handlePathListDblClickAction" orientation="HORIZONTAL" prefHeight="25.0" prefWidth="234.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="231.0" prefWidth="219.0">
                <children>
-                  <ListView fx:id="playList" layoutX="6.0" layoutY="-1.0" onMouseClicked="#handlePlaylistDblClickAction" prefHeight="160.0" prefWidth="148.0" style="-fx-background-color: grey;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <ListView fx:id="playList" layoutX="6.0" layoutY="-1.0" onKeyPressed="#keyListener" onMouseClicked="#handlePlaylistDblClickAction" prefHeight="160.0" prefWidth="148.0" style="-fx-background-color: grey;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
         </items>

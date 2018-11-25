@@ -149,7 +149,7 @@ public class Playlist {
         File nextTrack = null;
         int nextIndex = -1;
         
-        if (tracks.size() > 0 && curTrack != null)
+        if (tracks.size() > 0)
         {
             if (mode == MODE.NORMAL)
             {

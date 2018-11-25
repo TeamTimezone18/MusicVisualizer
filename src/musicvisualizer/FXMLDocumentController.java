@@ -8,9 +8,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,7 +18,6 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -30,10 +26,11 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -298,6 +295,78 @@ public class FXMLDocumentController implements Initializable
         }    
     }
     
+
+    public void keyListener(KeyEvent event)
+    {
+        if(event.getCode() == KeyCode.ENTER) 
+        {
+            if (playList.isFocused())
+            {
+                // Play selected track -- same as playlist dbl click
+                int selIndex = playList.getSelectionModel().getSelectedIndex();
+                if (selIndex >= 0)
+                {
+                    File newTrack = playlist.tracks.get(selIndex);
+                    playlist.setCurTrack(selIndex);
+                    playNewTrack(newTrack);
+                } 
+            }
+            else if (fileList.isFocused())
+            {   
+                // if focused on file explorer add the selected tracks
+                handleAddButtonAction(null);
+            }
+            else
+            {
+                // if focus is off lists, skip to next track
+                handleSkipButtonAction(null);
+            }
+         }
+        else if (event.getCode() == KeyCode.BACK_SPACE)
+            {
+                // Previous track
+                handlePrevButtonAction(null);
+                event.consume();
+            }     
+        else if (event.getCode() == KeyCode.SPACE)
+            {
+                // Play/pause
+                handlePlayButtonAction(null);
+            }        
+        else if (event.getCode() == KeyCode.DELETE && playList.isFocused())
+            {
+                // Delete selected tracks if playlist is focused
+                handleDeleteButtonAction(null);
+            }
+        else if (event.getCode() == KeyCode.F1)
+            {
+                // set volume down
+                VolumeSlider.setValue(VolumeSlider.getValue()-5);
+            }
+        else if (event.getCode() == KeyCode.F2)
+            {
+                // set volume up
+                VolumeSlider.setValue(VolumeSlider.getValue()+5);
+            }
+        else if(!TimeSlider.disabledProperty().getValue())
+            {
+                if (event.getCode() == KeyCode.RIGHT)
+                {
+                    // Seek forward
+                    TimeSlider.setValue(TimeSlider.getValue()+1);
+                    player.setTime(TimeSlider.getValue());
+                    event.consume(); 
+                }
+                else if (event.getCode() == KeyCode.LEFT)
+                {
+                    // Seek back
+                    TimeSlider.setValue(TimeSlider.getValue()-1);
+                    player.setTime(TimeSlider.getValue());
+                    event.consume(); 
+                }
+            }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle rb) 
     {
@@ -334,13 +403,13 @@ public class FXMLDocumentController implements Initializable
         
         // Initialize slider listeners
         TimeSlider.disableProperty().set(true);
-        TimeSlider.valueProperty().addListener(new InvalidationListener() {
-            public void invalidated(Observable ov) {
-               if (TimeSlider.isValueChanging()) {
-                        player.mp.pause();
-                        player.setTime(TimeSlider.getValue());
-               }
-            }
+        TimeSlider.setOnMousePressed(event -> {
+            player.mp.pause();
+            player.setTime(TimeSlider.getValue());
+        });
+        TimeSlider.setOnMouseDragged(event -> {
+            player.mp.pause();
+            player.setTime(TimeSlider.getValue());
         });
         TimeSlider.setOnMouseReleased(event -> {
             player.mp.play();
@@ -349,14 +418,32 @@ public class FXMLDocumentController implements Initializable
         VolumeSlider.setValue(100);
         VolumeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
-               if (VolumeSlider.isValueChanging()) {
                    if (player.mp != null)
                    {
                        player.mp.setVolume(VolumeSlider.getValue() / 100.0);
                    }
-               }
             }
         });
+        
+        // give user a way to take focus off of lists
+        anchorPane.setOnMouseClicked(event ->
+        {
+            anchorPane.requestFocus();
+        });
+        
+        // don't set focus with tab or arrow keys on any controls except lists or main pane
+        VolumeSlider.setFocusTraversable(false);
+        TimeSlider.setFocusTraversable(false);
+        addButton.setFocusTraversable(false);
+        DeleteButton.setFocusTraversable(false);
+        TrackUpButton.setFocusTraversable(false);
+        TrackDownButton.setFocusTraversable(false);
+        playButton.setFocusTraversable(false);
+        skipButton.setFocusTraversable(false);
+        prevButton.setFocusTraversable(false);
+        RepeatButton.setFocusTraversable(false);
+        ShuffleButton.setFocusTraversable(false);
+        filePathList.setFocusTraversable(false);
         
         // setup the animation timeline and data for the chart
         // chart aesthetic settings could be in css file

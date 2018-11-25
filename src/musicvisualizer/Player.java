@@ -113,13 +113,15 @@ public class Player {
     
     public void setTime(Number currentTime)
     {
-    	Duration trackTime = mp.getMedia().getDuration();
-    	Duration  newTime = trackTime.multiply((double) currentTime / 100);
-    	mp.seek(newTime);
-        track.updatePlaybackTime(newTime);
+        if (mp != null)
+        {
+            Duration trackTime = mp.getMedia().getDuration();
+            Duration  newTime = trackTime.multiply((double) currentTime / 100);
+            mp.seek(newTime);
+            track.updatePlaybackTime(newTime);
+        }
     }
 
-    
     
     public class Track
     {
