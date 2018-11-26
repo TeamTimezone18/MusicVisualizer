@@ -47,7 +47,7 @@ public class Player {
         
     }
     
-    public void PlayNew(File newTrack)
+    public void playNew(File newTrack)
     {
         // If there is a track playing, stop it before starting next
         if(mp != null)
@@ -98,7 +98,7 @@ public class Player {
         });
     }
     
-    public void PlayPause()
+    public void playPause()
     {
         if(track != null)
         {

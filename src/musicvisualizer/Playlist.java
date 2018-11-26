@@ -67,7 +67,7 @@ public class Playlist {
         }
     }
     
-    public void AddTracks(ObservableList<File> newtracks)
+    public void addTracks(ObservableList<File> newtracks)
     {
         // Remove duplicates and add valid tracks to end
         for (File file : tracks)
@@ -214,7 +214,7 @@ public class Playlist {
     }
     
     
-    public ObservableList<String> GetNames()
+    public ObservableList<String> getNames()
     {
         ObservableList<String> names = FXCollections.observableArrayList();
         

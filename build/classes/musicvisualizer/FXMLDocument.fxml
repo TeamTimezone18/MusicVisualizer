@@ -12,7 +12,6 @@
 <AnchorPane id="AnchorPane" fx:id="anchorPane" onKeyPressed="#keyListener" prefHeight="564.0" prefWidth="937.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="musicvisualizer.FXMLDocumentController">
     <children>
         <Button fx:id="prevButton" layoutX="707.0" layoutY="111.0" onAction="#handlePrevButtonAction" text="Prev" />
-        <Label fx:id="label" layoutX="167.0" layoutY="21.0" minHeight="16" minWidth="69" textFill="#ffffff66" />
       <Button fx:id="playButton" layoutX="758.0" layoutY="111.0" onAction="#handlePlayButtonAction" text="Play/Pause" />
       <Button fx:id="skipButton" layoutX="840.0" layoutY="111.0" onAction="#handleSkipButtonAction" text="Next" />
       <Button fx:id="addButton" layoutX="544.0" layoutY="233.0" onAction="#handleAddButtonAction" text="Add to Playlist" />
@@ -24,19 +23,19 @@
           <NumberAxis side="LEFT" />
         </yAxis>
       </BarChart>
-      <ImageView fx:id="AlbumImage" fitHeight="150.0" fitWidth="200.0" layoutX="457.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
-      <Button fx:id="ShuffleButton" layoutX="741.0" layoutY="163.0" onAction="#handleShuffleButtonAction" text="Shuffle" />
-      <Button fx:id="RepeatButton" layoutX="801.0" layoutY="163.0" onAction="#handleRepeatButtonAction" text="Repeat" />
-      <Button fx:id="DeleteButton" layoutX="638.0" layoutY="233.0" onAction="#handleDeleteButtonAction" text="Delete from Playlist" />
-      <Button fx:id="TrackUpButton" layoutX="759.0" layoutY="233.0" onAction="#handleTrackUpButtonAction" prefHeight="25.0" prefWidth="69.0" text="Track Up" />
-      <Button fx:id="TrackDownButton" layoutX="829.0" layoutY="233.0" onAction="#handleTrackDownButtonAction" text="Track Down" />
-      <Slider fx:id="TimeSlider" blockIncrement="1.0" layoutX="122.0" layoutY="511.0" majorTickUnit="1.0" minorTickCount="1" onKeyPressed="#keyListener" prefHeight="14.0" prefWidth="227.0" />
-      <Slider fx:id="VolumeSlider" layoutX="422.0" layoutY="459.0" orientation="VERTICAL" prefHeight="68.0" prefWidth="14.0" />
-      <Label fx:id="CurrentTimeLabel" layoutX="86.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
-      <Label fx:id="DurationLabel" layoutX="350.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
-      <Label fx:id="TrackNameLabel" alignment="CENTER" layoutX="735.0" layoutY="38.0" prefHeight="17.0" prefWidth="119.0" text="[Track Name]" textAlignment="CENTER" textFill="#b5b0ac" />
-      <Label fx:id="ArtistLabel" alignment="CENTER" layoutX="735.0" layoutY="54.0" prefHeight="17.0" prefWidth="119.0" text="[Artist Name]" textAlignment="CENTER" textFill="#b5b0ac" />
-      <Label fx:id="AlbumNameLabel" alignment="CENTER" layoutX="735.0" layoutY="71.0" prefHeight="17.0" prefWidth="119.0" text="[Album Name]" textFill="#b5b0ac" />
+      <ImageView fx:id="albumImage" fitHeight="150.0" fitWidth="200.0" layoutX="457.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
+      <Button fx:id="shuffleButton" layoutX="741.0" layoutY="163.0" onAction="#handleShuffleButtonAction" text="Shuffle" />
+      <Button fx:id="repeatButton" layoutX="801.0" layoutY="163.0" onAction="#handleRepeatButtonAction" text="Repeat" />
+      <Button fx:id="deleteButton" layoutX="638.0" layoutY="233.0" onAction="#handleDeleteButtonAction" text="Delete from Playlist" />
+      <Button fx:id="trackUpButton" layoutX="759.0" layoutY="233.0" onAction="#handleTrackUpButtonAction" prefHeight="25.0" prefWidth="69.0" text="Track Up" />
+      <Button fx:id="trackDownButton" layoutX="829.0" layoutY="233.0" onAction="#handleTrackDownButtonAction" text="Track Down" />
+      <Slider fx:id="timeSlider" blockIncrement="1.0" layoutX="122.0" layoutY="511.0" majorTickUnit="1.0" minorTickCount="1" onKeyPressed="#keyListener" prefHeight="14.0" prefWidth="227.0" />
+      <Slider fx:id="volumeSlider" layoutX="422.0" layoutY="459.0" orientation="VERTICAL" prefHeight="68.0" prefWidth="14.0" />
+      <Label fx:id="currentTimeLabel" layoutX="86.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
+      <Label fx:id="durationLabel" layoutX="350.0" layoutY="510.0" text="0:00" textAlignment="RIGHT" textFill="#b5b0ac" />
+      <Label fx:id="titleLabel" alignment="CENTER" layoutX="735.0" layoutY="38.0" prefHeight="17.0" prefWidth="119.0" text="[Track Name]" textAlignment="CENTER" textFill="#b5b0ac" />
+      <Label fx:id="artistLabel" alignment="CENTER" layoutX="735.0" layoutY="54.0" prefHeight="17.0" prefWidth="119.0" text="[Artist Name]" textAlignment="CENTER" textFill="#b5b0ac" />
+      <Label fx:id="albumLabel" alignment="CENTER" layoutX="735.0" layoutY="71.0" prefHeight="17.0" prefWidth="119.0" text="[Album Name]" textFill="#b5b0ac" />
       <SplitPane dividerPositions="0.5" layoutX="453.0" layoutY="266.0" prefHeight="291.0" prefWidth="476.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="453.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="266.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="192.0" prefWidth="210.0">

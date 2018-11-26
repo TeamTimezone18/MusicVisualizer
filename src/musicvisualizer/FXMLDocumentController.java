@@ -56,8 +56,7 @@ public class FXMLDocumentController implements Initializable
     final int NUMBARS = 128;  // number of bars in the barchart
     final int UPDATERATE = 20; // refresh rate in hertz
     
-    @FXML
-    private Label label;
+    
     @FXML
     private ListView fileList;
     @FXML
@@ -77,31 +76,31 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private BarChart<String, Number> chart;
     @FXML
-    private Button ShuffleButton;
+    private Button shuffleButton;
     @FXML
-    private Button RepeatButton;
+    private Button repeatButton;
     @FXML
-    private Button DeleteButton;
+    private Button deleteButton;
     @FXML
-    private Button TrackUpButton;
+    private Button trackUpButton;
     @FXML
-    private Button TrackDownButton;
+    private Button trackDownButton;
     @FXML
-    private ImageView AlbumImage;
+    private ImageView albumImage;
     @FXML
-    private Slider TimeSlider;
+    private Slider timeSlider;
     @FXML
-    private Slider VolumeSlider;
+    private Slider volumeSlider;
     @FXML
-    private Label CurrentTimeLabel;
+    private Label currentTimeLabel;
     @FXML
-    private Label DurationLabel;
+    private Label durationLabel;
     @FXML
-    private Label TrackNameLabel;
+    private Label titleLabel;
     @FXML
-    private Label ArtistLabel;
+    private Label artistLabel;
     @FXML
-    private Label AlbumNameLabel;
+    private Label albumLabel;
 
     @FXML
     private void handleAddButtonAction(ActionEvent event) 
@@ -138,7 +137,6 @@ public class FXMLDocumentController implements Initializable
             playList.getSelectionModel().select(selectedIndex-1);
         }
         
-        label.setText("move track up");
     }
     
     @FXML
@@ -157,7 +155,6 @@ public class FXMLDocumentController implements Initializable
             updatePlaylistListView();
             playList.getSelectionModel().select(selectedIndex+1);
         }
-        label.setText("move track down");
     }
     
     
@@ -166,12 +163,10 @@ public class FXMLDocumentController implements Initializable
     {
         if (playlist.mode.toString().equals("SHUFFLE"))
         {
-            label.setText("shuffle off");
             playlist.setMode("NORMAL");
         }
         else
         {
-            label.setText("shuffle on");
             playlist.setMode("SHUFFLE");
         }
     }
@@ -182,12 +177,10 @@ public class FXMLDocumentController implements Initializable
         
         if (playlist.mode.toString().equals("REPEAT"))
         {
-            label.setText("repeat off");
             playlist.setMode("NORMAL");
         }
         else
         {
-            label.setText("repeat on");
             playlist.setMode("REPEAT");
         }
     }
@@ -292,27 +285,27 @@ public class FXMLDocumentController implements Initializable
         else if (event.getCode() == KeyCode.F1)
             {
                 // set volume down
-                VolumeSlider.setValue(VolumeSlider.getValue()-5);
+                volumeSlider.setValue(volumeSlider.getValue()-5);
             }
         else if (event.getCode() == KeyCode.F2)
             {
                 // set volume up
-                VolumeSlider.setValue(VolumeSlider.getValue()+5);
+                volumeSlider.setValue(volumeSlider.getValue()+5);
             }
-        else if(!TimeSlider.disabledProperty().getValue())
+        else if(!timeSlider.disabledProperty().getValue())
             {
                 if (event.getCode() == KeyCode.RIGHT)
                 {
                     // Seek forward
-                    TimeSlider.setValue(TimeSlider.getValue()+1);
-                    player.setTime(TimeSlider.getValue());
+                    timeSlider.setValue(timeSlider.getValue()+1);
+                    player.setTime(timeSlider.getValue());
                     event.consume(); 
                 }
                 else if (event.getCode() == KeyCode.LEFT)
                 {
                     // Seek back
-                    TimeSlider.setValue(TimeSlider.getValue()-1);
-                    player.setTime(TimeSlider.getValue());
+                    timeSlider.setValue(timeSlider.getValue()-1);
+                    player.setTime(timeSlider.getValue());
                     event.consume(); 
                 }
             }
@@ -336,12 +329,12 @@ public class FXMLDocumentController implements Initializable
         initializeChart();
         
         // Initialize label and image binding to track metadata properties
-        ArtistLabel.textProperty().bind(player.track.artist);
-        AlbumNameLabel.textProperty().bind(player.track.album);
-        TrackNameLabel.textProperty().bind(player.track.title);
-        DurationLabel.textProperty().bind(player.track.durationString);
-        CurrentTimeLabel.textProperty().bind(player.track.playbackTime);
-        AlbumImage.imageProperty().bind(player.track.albumImage);
+        artistLabel.textProperty().bind(player.track.artist);
+        albumLabel.textProperty().bind(player.track.album);
+        titleLabel.textProperty().bind(player.track.title);
+        durationLabel.textProperty().bind(player.track.durationString);
+        currentTimeLabel.textProperty().bind(player.track.playbackTime);
+        albumImage.imageProperty().bind(player.track.albumImage);
         
         setupFileDragDrop();
         
@@ -385,30 +378,30 @@ public class FXMLDocumentController implements Initializable
     
     private void initializeTimeSlider()
     {
-        TimeSlider.disableProperty().set(true);
+        timeSlider.disableProperty().set(true);
         
-        TimeSlider.setOnMousePressed(event -> {
+        timeSlider.setOnMousePressed(event -> {
             player.mp.pause();
-            player.setTime(TimeSlider.getValue());
+            player.setTime(timeSlider.getValue());
         });
-        TimeSlider.setOnMouseDragged(event -> {
+        timeSlider.setOnMouseDragged(event -> {
             player.mp.pause();
-            player.setTime(TimeSlider.getValue());
+            player.setTime(timeSlider.getValue());
         });
-        TimeSlider.setOnMouseReleased(event -> {
+        timeSlider.setOnMouseReleased(event -> {
             player.mp.play();
         });
     }
     
     private void initializeVolumeSlider()
     {
-        VolumeSlider.setValue(100);
+        volumeSlider.setValue(100);
         
-        VolumeSlider.valueProperty().addListener(new InvalidationListener() {
+        volumeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                    if (player.mp != null)
                    {
-                       player.mp.setVolume(VolumeSlider.getValue() / 100.0);
+                       player.mp.setVolume(volumeSlider.getValue() / 100.0);
                    }
             }
         });
@@ -456,17 +449,17 @@ public class FXMLDocumentController implements Initializable
         });
         
         // Don't set focus with tab or arrow keys on any controls except lists or main pane
-        VolumeSlider.setFocusTraversable(false);
-        TimeSlider.setFocusTraversable(false);
+        volumeSlider.setFocusTraversable(false);
+        timeSlider.setFocusTraversable(false);
         addButton.setFocusTraversable(false);
-        DeleteButton.setFocusTraversable(false);
-        TrackUpButton.setFocusTraversable(false);
-        TrackDownButton.setFocusTraversable(false);
+        deleteButton.setFocusTraversable(false);
+        trackUpButton.setFocusTraversable(false);
+        trackDownButton.setFocusTraversable(false);
         playButton.setFocusTraversable(false);
         skipButton.setFocusTraversable(false);
         prevButton.setFocusTraversable(false);
-        RepeatButton.setFocusTraversable(false);
-        ShuffleButton.setFocusTraversable(false);
+        repeatButton.setFocusTraversable(false);
+        shuffleButton.setFocusTraversable(false);
         filePathList.setFocusTraversable(false);
     }
     
@@ -499,7 +492,7 @@ public class FXMLDocumentController implements Initializable
     private void updatePlaylistListView()
     {
         playListData.clear();
-        for (String track : playlist.GetNames())
+        for (String track : playlist.getNames())
         {
             CustomListViewItem ci = new CustomListViewItem();
             ci.setString(track);
@@ -527,14 +520,14 @@ public class FXMLDocumentController implements Initializable
     
     private void playNewTrack(File newFile)
     {
-        AlbumImage.setOpacity(0); // hide so default metadata so it doesn't flash during update
-        ArtistLabel.setOpacity(0);
-        AlbumNameLabel.setOpacity(0);
-        TrackNameLabel.setOpacity(0);
-        player.PlayNew(newFile);
+        albumImage.setOpacity(0); // hide so default metadata so it doesn't flash during update
+        artistLabel.setOpacity(0);
+        albumLabel.setOpacity(0);
+        titleLabel.setOpacity(0);
+        player.playNew(newFile);
         updatePlaylistCurTrackItem();
-        player.mp.setVolume(VolumeSlider.getValue() / 100.0);
-        TimeSlider.disableProperty().set(false);
+        player.mp.setVolume(volumeSlider.getValue() / 100.0);
+        timeSlider.disableProperty().set(false);
         player.mp.setAudioSpectrumInterval((1.0/UPDATERATE));
         player.mp.setAudioSpectrumNumBands(NUMBARS);
         
@@ -542,18 +535,18 @@ public class FXMLDocumentController implements Initializable
         {
             public void invalidated(Observable ov) 
             {
-                if (!TimeSlider.isValueChanging())
+                if (!timeSlider.isValueChanging())
                 {
-                    TimeSlider.setValue(player.track.progress.doubleValue());
+                    timeSlider.setValue(player.track.progress.doubleValue());
                 }
-                if (AlbumImage.opacityProperty().getValue() == 0)
+                if (albumImage.opacityProperty().getValue() == 0)
                 {
                     // When cur time starts changing, metadata should be loaded,
                     // so make it visible
-                    AlbumImage.setOpacity(100);
-                    ArtistLabel.setOpacity(100);
-                    AlbumNameLabel.setOpacity(100);
-                    TrackNameLabel.setOpacity(100);
+                    albumImage.setOpacity(100);
+                    artistLabel.setOpacity(100);
+                    albumLabel.setOpacity(100);
+                    titleLabel.setOpacity(100);
                 }
             }
         });
@@ -630,7 +623,7 @@ public class FXMLDocumentController implements Initializable
         // If any files are selected, add them to end of playlist
         if (newfiles.size() > 0)
         {
-            playlist.AddTracks(newfiles);
+            playlist.addTracks(newfiles);
             updatePlaylistListView();
         }
     }
@@ -642,7 +635,6 @@ public class FXMLDocumentController implements Initializable
         playlist.delTracks(playlistSelection);
         updatePlaylistListView();
         
-        label.setText("delete");
     }
     
     private void playNextTrack()
@@ -655,7 +647,6 @@ public class FXMLDocumentController implements Initializable
             playNewTrack(newTrack);
         }
         
-        label.setText("skip");
     }
  
     private void playLastTrack()
@@ -668,14 +659,13 @@ public class FXMLDocumentController implements Initializable
             playNewTrack(newTrack);
         }
         
-        label.setText("previous");
     }
     
     private void togglePlayPause()
     {
         if (player.mp != null)
         {
-            player.PlayPause();
+            player.playPause();
         }
     }
     
