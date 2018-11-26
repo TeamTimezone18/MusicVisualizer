@@ -1,5 +1,6 @@
 package musicvisualizer;
 
+import java.awt.Color;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,10 +28,14 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -257,8 +262,6 @@ public class FXMLDocumentController implements Initializable
                 File newTrack = playlist.tracks.get(selIndex);
                 playlist.setCurTrack(selIndex);
                 playNewTrack(newTrack);
-                
-                        
             }
         }    
     }
@@ -487,6 +490,8 @@ public class FXMLDocumentController implements Initializable
         CurrentTimeLabel.textProperty().bind(player.track.playbackTime);
         AlbumImage.imageProperty().bind(player.track.albumImage);
         
+        setupFileDragDrop();
+        
     }    
 
     private void updateFileExplorerListViews()
@@ -577,6 +582,46 @@ public class FXMLDocumentController implements Initializable
             }
        });
         
+    }
+    
+    private void setupFileDragDrop()
+    {
+        fileList.setOnDragDetected(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                Dragboard db = fileList.startDragAndDrop(TransferMode.ANY);
+                ClipboardContent content = new ClipboardContent();
+                content.putString(fileList.getSelectionModel().toString());
+                db.setContent(content);
+                event.consume();
+            }
+        });
+        
+        
+        playList.setOnDragOver(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                // If file list data is dragged over playlist, accept the drag
+                if (event.getGestureSource() != playList && event.getDragboard().hasString()) {
+                    event.acceptTransferModes(TransferMode.MOVE);
+                }
+
+                event.consume();
+            }
+        });
+        
+        playList.setOnDragDropped(new EventHandler<DragEvent>() {
+            public void handle(DragEvent event) {
+                // if there is a file selection string data on dragboard, add selected files
+                Dragboard db = event.getDragboard();
+                boolean success = false;
+                if (db.hasString()) {
+                   success = true;
+                   handleAddButtonAction(null);
+                }
+                event.setDropCompleted(success);
+
+                event.consume();
+             }
+        });
     }
     
 }
