@@ -1,6 +1,5 @@
 package musicvisualizer;
 
-import java.awt.Color;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -9,7 +8,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,7 +24,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
@@ -41,8 +38,6 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 
 /**
- * @author Benjamin Wasserman
- * @author Dan Sharp
  * @author Tristan Hunter
  */
 public class FXMLDocumentController implements Initializable 
@@ -111,69 +106,25 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private void handleAddButtonAction(ActionEvent event) 
     {    
-        // If index selected in file explorer is a valid file, add to new list for passing to playlist
-        ObservableList<Integer> fileSelection = fileList.getSelectionModel().getSelectedIndices();
-        
-        // Listview shows folders first, so subtract number of 
-        // folders from selected indices to get actual selected file indices  
-        Integer actualIndex;
-        ObservableList<Integer> subFileSelection = FXCollections.observableArrayList();
-        for (Integer index : fileSelection)
-        {
-            actualIndex = index - numDir;
-            // only add files, not directories
-            if (actualIndex >= 0)
-            {
-                subFileSelection.add(actualIndex);                
-            }
-        }
-        ObservableList<File> newfiles = fileExplorer.getFilesAtIndices(subFileSelection);
-      
-        // If any files are selected, add them to end of playlist
-        if (newfiles.size() > 0)
-        {
-            playlist.AddTracks(newfiles);
-            updatePlaylistListView();
-        }
+        addSelectedFilesToPlaylist();
     }
     
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) 
     {
-        // Get selected items and call playlist delete method, then update GUI
-        ObservableList<Integer> playlistSelection = playList.getSelectionModel().getSelectedIndices();
-        playlist.delTracks(playlistSelection);
-        updatePlaylistListView();
-        
-        label.setText("delete");
+        deleteSelectedFilesFromPlaylist();
     }
     
     @FXML
     private void handleSkipButtonAction(ActionEvent event) 
     {
-        // Pass next file from playlist to player
-        File newTrack = playlist.getNext();
-        
-        if (newTrack != null)
-        {
-            playNewTrack(newTrack);
-        }
-        
-        label.setText("skip");
+        playNextTrack();
     }
 
     @FXML
     private void handlePrevButtonAction(ActionEvent event) 
     {
-        // Pass last file from playlist history to player
-        File newTrack = playlist.getLast();
-        
-        if (newTrack != null)
-        {
-            playNewTrack(newTrack);
-        }
-        
-        label.setText("previous");
+        playLastTrack();
     }
     
     @FXML
@@ -241,14 +192,10 @@ public class FXMLDocumentController implements Initializable
         }
     }
 
-        @FXML
+    @FXML
     private void handlePlayButtonAction(ActionEvent event) 
     {
-        System.out.println("play/pause button");    
-        if (player.mp != null)
-        {
-            player.PlayPause();
-        }
+        togglePlayPause();
     }
     
     @FXML
@@ -299,7 +246,7 @@ public class FXMLDocumentController implements Initializable
         }    
     }
     
-
+    @FXML
     public void keyListener(KeyEvent event)
     {
         if(event.getCode() == KeyCode.ENTER) 
@@ -318,29 +265,29 @@ public class FXMLDocumentController implements Initializable
             else if (fileList.isFocused())
             {   
                 // if focused on file explorer add the selected tracks
-                handleAddButtonAction(null);
+                addSelectedFilesToPlaylist();
             }
             else
             {
                 // if focus is off lists, skip to next track
-                handleSkipButtonAction(null);
+                playNextTrack();
             }
          }
         else if (event.getCode() == KeyCode.BACK_SPACE)
             {
                 // Previous track
-                handlePrevButtonAction(null);
+                playLastTrack();
                 event.consume();
             }     
         else if (event.getCode() == KeyCode.SPACE)
             {
                 // Play/pause
-                handlePlayButtonAction(null);
+                togglePlayPause();
             }        
         else if (event.getCode() == KeyCode.DELETE && playList.isFocused())
             {
                 // Delete selected tracks if playlist is focused
-                handleDeleteButtonAction(null);
+                deleteSelectedFilesFromPlaylist();
             }
         else if (event.getCode() == KeyCode.F1)
             {
@@ -374,7 +321,35 @@ public class FXMLDocumentController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb) 
     {
-        // Initialize FileExplorer
+        player = new Player();
+        
+        initializeFileExplorer();
+
+        initializePlaylist();
+        
+        initializeTimeSlider();
+        
+        initializeVolumeSlider();
+        
+        configureFocusSettings();
+        
+        initializeChart();
+        
+        // Initialize label and image binding to track metadata properties
+        ArtistLabel.textProperty().bind(player.track.artist);
+        AlbumNameLabel.textProperty().bind(player.track.album);
+        TrackNameLabel.textProperty().bind(player.track.title);
+        DurationLabel.textProperty().bind(player.track.durationString);
+        CurrentTimeLabel.textProperty().bind(player.track.playbackTime);
+        AlbumImage.imageProperty().bind(player.track.albumImage);
+        
+        setupFileDragDrop();
+        
+    }    
+
+    private void initializeFileExplorer()
+    {
+        // Create FileExplorer object
         fileExplorer = new FileExplorer();
    
         // Configure and populate file explorer listviews
@@ -388,9 +363,14 @@ public class FXMLDocumentController implements Initializable
             }
         });
         updateFileExplorerListViews();
-
-        // Initialize Playlist object and configure listview
+    }
+    
+    private void initializePlaylist()
+    {
+        // Create Playlist object
         playlist = new Playlist();
+        
+        // Configure and populate playlist listview
         playList.setItems(playListData);
         playList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         playList.setCellFactory(new Callback<ListView<CustomListViewItem>, ListCell<CustomListViewItem>>() {
@@ -401,12 +381,12 @@ public class FXMLDocumentController implements Initializable
             }
         });
         updatePlaylistListView();
-            
-        // Initialize Player object
-        player = new Player();
-        
-        // Initialize slider listeners
+    }
+    
+    private void initializeTimeSlider()
+    {
         TimeSlider.disableProperty().set(true);
+        
         TimeSlider.setOnMousePressed(event -> {
             player.mp.pause();
             player.setTime(TimeSlider.getValue());
@@ -418,8 +398,12 @@ public class FXMLDocumentController implements Initializable
         TimeSlider.setOnMouseReleased(event -> {
             player.mp.play();
         });
-        
+    }
+    
+    private void initializeVolumeSlider()
+    {
         VolumeSlider.setValue(100);
+        
         VolumeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                    if (player.mp != null)
@@ -428,29 +412,11 @@ public class FXMLDocumentController implements Initializable
                    }
             }
         });
-        
-        // give user a way to take focus off of lists
-        anchorPane.setOnMouseClicked(event ->
-        {
-            anchorPane.requestFocus();
-        });
-        
-        // don't set focus with tab or arrow keys on any controls except lists or main pane
-        VolumeSlider.setFocusTraversable(false);
-        TimeSlider.setFocusTraversable(false);
-        addButton.setFocusTraversable(false);
-        DeleteButton.setFocusTraversable(false);
-        TrackUpButton.setFocusTraversable(false);
-        TrackDownButton.setFocusTraversable(false);
-        playButton.setFocusTraversable(false);
-        skipButton.setFocusTraversable(false);
-        prevButton.setFocusTraversable(false);
-        RepeatButton.setFocusTraversable(false);
-        ShuffleButton.setFocusTraversable(false);
-        filePathList.setFocusTraversable(false);
-        
+    }
+    
+        private void initializeChart()
+    {
         // setup the animation timeline and data for the chart
-        // chart aesthetic settings could be in css file
         chart.setAnimated(false);
         chart.setHorizontalGridLinesVisible(false);
         chart.setVerticalGridLinesVisible(false);
@@ -460,8 +426,7 @@ public class FXMLDocumentController implements Initializable
         Timeline animation = new Timeline();
         animation.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATERATE), new    EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent actionEvent) {
-                
-              //update graph
+              // Update graph data
               Integer index = 0;
               for (Float value : player.track.spectrumData)
               {
@@ -474,26 +439,38 @@ public class FXMLDocumentController implements Initializable
         animation.setCycleCount(Animation.INDEFINITE);
         animation.play();
         
-        
         float init = 0;
         for (Integer i =0; i<NUMBARS;i++ )
         {
             spectrumDataSeries.getData().add(new XYChart.Data(i.toString(), init));
         }
         chart.getData().addAll(spectrumDataSeries);
+    }
+    
+    private void configureFocusSettings()
+    {
+        // Give user a way to take focus off of lists
+        anchorPane.setOnMouseClicked(event ->
+        {
+            anchorPane.requestFocus();
+        });
         
-        // Initialize bindings to track properties
-        ArtistLabel.textProperty().bind(player.track.artist);
-        AlbumNameLabel.textProperty().bind(player.track.album);
-        TrackNameLabel.textProperty().bind(player.track.title);
-        DurationLabel.textProperty().bind(player.track.durationString);
-        CurrentTimeLabel.textProperty().bind(player.track.playbackTime);
-        AlbumImage.imageProperty().bind(player.track.albumImage);
-        
-        setupFileDragDrop();
-        
-    }    
-
+        // Don't set focus with tab or arrow keys on any controls except lists or main pane
+        VolumeSlider.setFocusTraversable(false);
+        TimeSlider.setFocusTraversable(false);
+        addButton.setFocusTraversable(false);
+        DeleteButton.setFocusTraversable(false);
+        TrackUpButton.setFocusTraversable(false);
+        TrackDownButton.setFocusTraversable(false);
+        playButton.setFocusTraversable(false);
+        skipButton.setFocusTraversable(false);
+        prevButton.setFocusTraversable(false);
+        RepeatButton.setFocusTraversable(false);
+        ShuffleButton.setFocusTraversable(false);
+        filePathList.setFocusTraversable(false);
+    }
+    
+    
     private void updateFileExplorerListViews()
     {
         // Create custom items for directorys and add to fileListViewData 
@@ -550,7 +527,10 @@ public class FXMLDocumentController implements Initializable
     
     private void playNewTrack(File newFile)
     {
-        AlbumImage.setOpacity(0); // hide so default image doesn't flash during update
+        AlbumImage.setOpacity(0); // hide so default metadata so it doesn't flash during update
+        ArtistLabel.setOpacity(0);
+        AlbumNameLabel.setOpacity(0);
+        TrackNameLabel.setOpacity(0);
         player.PlayNew(newFile);
         updatePlaylistCurTrackItem();
         player.mp.setVolume(VolumeSlider.getValue() / 100.0);
@@ -571,6 +551,9 @@ public class FXMLDocumentController implements Initializable
                     // When cur time starts changing, metadata should be loaded,
                     // so make it visible
                     AlbumImage.setOpacity(100);
+                    ArtistLabel.setOpacity(100);
+                    AlbumNameLabel.setOpacity(100);
+                    TrackNameLabel.setOpacity(100);
                 }
             }
         });
@@ -578,7 +561,7 @@ public class FXMLDocumentController implements Initializable
         player.mp.setOnEndOfMedia(new Runnable() {
             public void run() 
             {
-                handleSkipButtonAction(null);
+                playNextTrack();
             }
        });
         
@@ -615,7 +598,7 @@ public class FXMLDocumentController implements Initializable
                 boolean success = false;
                 if (db.hasString()) {
                    success = true;
-                   handleAddButtonAction(null);
+                   addSelectedFilesToPlaylist();
                 }
                 event.setDropCompleted(success);
 
@@ -623,5 +606,80 @@ public class FXMLDocumentController implements Initializable
              }
         });
     }
+    
+    private void addSelectedFilesToPlaylist()
+    {
+        // If index selected in file explorer is a valid file, add to new list for passing to playlist
+        ObservableList<Integer> fileSelection = fileList.getSelectionModel().getSelectedIndices();
+        
+        // Listview shows folders first, so subtract number of 
+        // folders from selected indices to get actual selected file indices  
+        Integer actualIndex;
+        ObservableList<Integer> subFileSelection = FXCollections.observableArrayList();
+        for (Integer index : fileSelection)
+        {
+            actualIndex = index - numDir;
+            // only add files, not directories
+            if (actualIndex >= 0)
+            {
+                subFileSelection.add(actualIndex);                
+            }
+        }
+        ObservableList<File> newfiles = fileExplorer.getFilesAtIndices(subFileSelection);
+      
+        // If any files are selected, add them to end of playlist
+        if (newfiles.size() > 0)
+        {
+            playlist.AddTracks(newfiles);
+            updatePlaylistListView();
+        }
+    }
+    
+    private void deleteSelectedFilesFromPlaylist()
+    {
+        // Get selected items and call playlist delete method, then update GUI
+        ObservableList<Integer> playlistSelection = playList.getSelectionModel().getSelectedIndices();
+        playlist.delTracks(playlistSelection);
+        updatePlaylistListView();
+        
+        label.setText("delete");
+    }
+    
+    private void playNextTrack()
+    {
+        // Pass next file from playlist to player
+        File newTrack = playlist.getNext();
+        
+        if (newTrack != null)
+        {
+            playNewTrack(newTrack);
+        }
+        
+        label.setText("skip");
+    }
+ 
+    private void playLastTrack()
+    {
+        // Pass last file from playlist history to player
+        File newTrack = playlist.getLast();
+        
+        if (newTrack != null)
+        {
+            playNewTrack(newTrack);
+        }
+        
+        label.setText("previous");
+    }
+    
+    private void togglePlayPause()
+    {
+        if (player.mp != null)
+        {
+            player.PlayPause();
+        }
+    }
+    
+
+
     
 }

@@ -11,8 +11,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * @author Benjamin Wasserman
- * @author Dan Sharp
  * @author Tristan Hunter
  */
 
@@ -216,10 +214,6 @@ public class Playlist {
     }
     
     
-    
-    // UTILITY FUNCTIONS FOR GUI CONTROLLER
-    
-    // Return name strings of tracks in playlist
     public ObservableList<String> GetNames()
     {
         ObservableList<String> names = FXCollections.observableArrayList();

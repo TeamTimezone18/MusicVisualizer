@@ -12,8 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- *
- * @author Personal
+ * @author Tristan Hunter
  */
 public class CustomListViewItem 
 {

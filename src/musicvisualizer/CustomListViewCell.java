@@ -9,8 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 
 /**
- *
- * @author Personal
+ * @author Tristan Hunter
  */
 public class CustomListViewCell extends ListCell<CustomListViewItem>{
     @Override

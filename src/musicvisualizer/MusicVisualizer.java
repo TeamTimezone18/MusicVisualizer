@@ -12,8 +12,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
-*  @author Benjamin Wasserman
- * @author Dan Sharp
  * @author Tristan Hunter
  */
 public class MusicVisualizer extends Application 

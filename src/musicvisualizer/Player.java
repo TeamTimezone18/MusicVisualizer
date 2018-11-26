@@ -24,10 +24,9 @@ import javafx.scene.image.Image;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Duration;
 
-/**
- * @author Benjamin Wasserman
- * @author Dan Sharp
+/** 
  * @author Tristan Hunter
+ * @author Dan Sharp
  */
 
 public class Player {
@@ -75,7 +74,7 @@ public class Player {
             }
           });
         
-        // listen for frequency data
+        // Listen for frequency data
         mp.setAudioSpectrumListener(audioSpectrumListener);
         mp.setAudioSpectrumThreshold(-100);
         
@@ -194,9 +193,11 @@ public class Player {
         private void updateDuration(Duration newDuration) 
         {
             duration = newDuration;
-            
-            String newDurationString = formatTimeString(newDuration);
-            durationString.set(newDurationString);
+            if (duration != null)
+            {
+                String newDurationString = formatTimeString(newDuration);
+                durationString.set(newDurationString);
+            }
         }
         
         private void resetMetadata()
@@ -208,7 +209,7 @@ public class Player {
         }
         
         private void updateMetadata(String key, Object value) 
-        {System.out.println(key);
+        {
             if (key.equals("album")) 
             {
                 album.set(value.toString());

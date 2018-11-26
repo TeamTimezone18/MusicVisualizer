@@ -10,8 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
-*  @author Benjamin Wasserman
- * @author Dan Sharp
  * @author Tristan Hunter
  */
 public class FileExplorer
@@ -76,8 +74,6 @@ public class FileExplorer
         openDirectory(curDir);
     }
     
-    
-    //UTILITY FUNCTIONS FOR GUI CONTROLLER
     
     // Return list of strings of directoy names up to current directory 
     public ObservableList<String> getPathList()
