@@ -8,6 +8,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -477,11 +478,6 @@ public class FXMLDocumentController implements Initializable
             spectrumDataSeries.getData().add(new XYChart.Data(i.toString(), init));
         }
         chart.getData().addAll(spectrumDataSeries);
-
-        
-        // Initialize metadata image
-        Image image = new Image("/Resource/Vinyl.gif");
-        AlbumImage.setImage(image);
         
         // Initialize bindings to track properties
         ArtistLabel.textProperty().bind(player.track.artist);
@@ -489,7 +485,7 @@ public class FXMLDocumentController implements Initializable
         TrackNameLabel.textProperty().bind(player.track.title);
         DurationLabel.textProperty().bind(player.track.durationString);
         CurrentTimeLabel.textProperty().bind(player.track.playbackTime);
-        
+        AlbumImage.imageProperty().bind(player.track.albumImage);
         
     }    
 
@@ -549,6 +545,7 @@ public class FXMLDocumentController implements Initializable
     
     private void playNewTrack(File newFile)
     {
+        AlbumImage.setOpacity(0); // hide so default image doesn't flash during update
         player.PlayNew(newFile);
         updatePlaylistCurTrackItem();
         player.mp.setVolume(VolumeSlider.getValue() / 100.0);
@@ -563,6 +560,12 @@ public class FXMLDocumentController implements Initializable
                 if (!TimeSlider.isValueChanging())
                 {
                     TimeSlider.setValue(player.track.progress.doubleValue());
+                }
+                if (AlbumImage.opacityProperty().getValue() == 0)
+                {
+                    // When cur time starts changing, metadata should be loaded,
+                    // so make it visible
+                    AlbumImage.setOpacity(100);
                 }
             }
         });

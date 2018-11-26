@@ -9,7 +9,9 @@ import java.io.File;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.util.Duration;
 
@@ -135,16 +138,17 @@ public class Player {
         Duration duration;
         public ObservableList<Float> spectrumData = FXCollections.observableArrayList();
         int NUMBARS = 128;  // size of spectrum data
+        public ObjectProperty<Image> albumImage = new SimpleObjectProperty<>();;
         
         public Track()
         {
             trackFile = null;
             artist = new SimpleStringProperty();
-            artist.set("artist");
+            artist.set("");
             album = new SimpleStringProperty();
-            album.set("album");
+            album.set("");
             title = new SimpleStringProperty();
-            title.set("title");
+            title.set("");
             playbackTime = new SimpleStringProperty();
             playbackTime.set("0:00");
             progress = new SimpleDoubleProperty();
@@ -152,6 +156,8 @@ public class Player {
             durationString = new SimpleStringProperty();
             durationString.set("0:00");
             duration = Duration.UNKNOWN;
+            
+            albumImage.set(new Image("/Resource/Vinyl.gif"));
             
             for(int i = 0; i<NUMBARS; i++)
             {
@@ -195,13 +201,14 @@ public class Player {
         
         private void resetMetadata()
         {
-            artist.set("-");
-            album.set("-");
-            title.set("-");
+            artist.set("Unknown Artist");
+            album.set("Unknown Album");
+            title.set("Unknown Title");
+            albumImage.set(new Image("/Resource/Vinyl.gif"));
         }
         
         private void updateMetadata(String key, Object value) 
-        {
+        {System.out.println(key);
             if (key.equals("album")) 
             {
                 album.set(value.toString());
@@ -216,7 +223,7 @@ public class Player {
             } 
             if (key.equals("image")) 
             {
-                //
+                albumImage.set((Image)value);
             }
           }
         
