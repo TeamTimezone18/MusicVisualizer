@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package musicvisualizer;
 
 import java.io.*; 
@@ -12,9 +7,19 @@ import javafx.collections.ObservableList;
 
 /**
  * @author Tristan Hunter
+ * 
+ *  This class defines a dynamic ordered list of audio files 
+ *  and the associated methods to be used for automated playback
+ * 
+ *  Files can be added, deleted, and reordered
+ * 
+ *  A current track and a history of previously current tracks are 
+ *  stored as attributes during Playlist usage 
+ * 
  */
 
-public class Playlist {
+public class Playlist 
+{
     
     ObservableList<File> tracks;
     ObservableList<File> history;
@@ -24,6 +29,14 @@ public class Playlist {
 
     enum MODE {NORMAL,SHUFFLE,REPEAT}
     
+    
+    /**
+     *  Initialize a new playlist with no tracks, history, or current track
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.4.1	Playlist should be in sequential mode when the app is opened
+     *  4.5.0	Playlist is empty on program start
+     */
     public Playlist()
     {
         tracks = FXCollections.observableArrayList();
@@ -33,12 +46,28 @@ public class Playlist {
         mode = MODE.NORMAL;
     }
     
+    
+    /**
+     *  Change the operational mode of the Playlist
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.4.0	User can configure a playlist mode (sequential/shuffle/repeat)
+     * 
+     *  @param modeName string of an element of the enum MODE (i.e. "NORMAL"/"SHUFFLE"/"REPEAT")
+     */
     public void setMode(String modeName)
     {
         mode = MODE.valueOf(modeName);
     }
     
-    
+    /**
+     *  Set a new current track at a specified index
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  5.4.0	Current track is indicated in playlist with bold font
+     * 
+     * @param index the index of the file in the playlist to set as current track
+     */
     public void setCurTrack(int index)
     {
         if (tracks.size() < 0)
@@ -50,8 +79,7 @@ public class Playlist {
         // if the index is valid...
         if (index >= 0 && index <= (tracks.size()-1))
         {
-            // ... then update history and set new current track
-            
+            // ... then update history and set new current track       
             if (curTrack != null)
             {
                 history.add(curTrack);
@@ -61,15 +89,23 @@ public class Playlist {
         }
         else
         {
-            // set to defaults
+            // ... otherwise, set to defaults
             curTrackIndex = -1;
             curTrack = null;
         }
     }
     
+    /**
+     *  Add valid tracks to end of playlist, but don't add duplicates
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.1.0	User can add the tracks selected in the file explorer
+     *  4.1.4	Attempts to add duplicate tracks are ignored
+     * 
+     *  @param newtracks list of new files to add
+     */
     public void addTracks(ObservableList<File> newtracks)
     {
-        // Remove duplicates and add valid tracks to end
         for (File file : tracks)
         {
             if (newtracks.contains(file))
@@ -81,21 +117,29 @@ public class Playlist {
     }
     
     
+    /**
+     *  Remove tracks from playlist (and history if necessary)
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.2.0	User can delete tracks selected in the playlist
+     *  5.3.4	If a file is deleted from playlist, it should be removed from the history too
+     * 
+     * @param indices list of indices of files to be removed - must be in ascending order!
+     */
     public void delTracks(ObservableList<Integer> indices)
     {
-        // Indices arg should be in increasing order
         // Delete tracks last to first, one at a time
         for (int i = indices.size()-1; i >= 0; i--)
         {
             File del = tracks.remove(indices.get(i).intValue());
             
-            // remove all instances of deleted track in history too
+            // Remove all instances of deleted track in history too
             while (history.contains(del))
             {
                 history.remove(del);
             }
             
-            // if deleting the current track, set curTrack to default null
+            // If deleting the current track, set curTrack to default null
             if (indices.get(i).intValue() == curTrackIndex)
             {
                 setCurTrack(-1);
@@ -103,11 +147,21 @@ public class Playlist {
             
         }
         
-        //update index of curTrack
+        // Update index of curTrack
         curTrackIndex = tracks.indexOf(curTrack);
         
     }
     
+    
+    /**
+     *  Swap index of a selected track with the next lower index
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.3.0	User can reorder tracks
+     *  4.3.1	User can move a selected track up the list using a button
+     * 
+     *  @param index index of file in the playlist to be moved up
+     */
     public void moveTrackUp(int index)
     {
         File toMove = tracks.get(index);
@@ -124,7 +178,15 @@ public class Playlist {
         }
     }
     
-
+    /**
+     *  Swap index of a selected track with the next higher index
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.3.0	User can reorder tracks
+     *  4.3.2	User can move a selected track down the list using a button
+     * 
+     *  @param index index of file in the playlist to be moved down
+     */
     public void moveTrackDown(int index)
     {
         File toMove = tracks.get(index);
@@ -142,6 +204,17 @@ public class Playlist {
     }
     
     
+    /**
+     *  Get a new track from the playlist according to the mode and update history
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  5.2.0   User can skip to the next file in the playlist
+     *  5.2.3	If mode is shuffle, a random file from the playlist is started
+     *  5.2.4	If mode is repeat, the current file is restarted if it is in the playlist still
+     *  5.2.5	If mode is sequential, the next sequential file in the playlist is started
+     * 
+     *  @return an audio file in the playlist
+     */
     public File getNext()
     {
         File nextTrack = null;
@@ -167,18 +240,6 @@ public class Playlist {
                 {
                     nextIndex = rand.nextInt(tracks.size());
                 }
-                
-                /*  logic to prevent repeating tracks if new tracks exist
-                    breaks after entire playlist is played once
-                while (nextIndex == -1)
-                {
-                    nextIndex = rand.nextInt(tracks.size());
-                    if (nextIndex == curTrackIndex || history.contains(tracks.get(nextIndex)))
-                    {
-                        nextIndex = -1;
-                    }
-                }*/
-                
             }
             else if (mode == MODE.REPEAT)
             {
@@ -195,7 +256,15 @@ public class Playlist {
         return nextTrack;
     }
     
-    
+    /**
+     *  Get the most recent track from the history list
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  5.3.0	User can skip through a history of previously played tracks
+     *  5.3.3	If there is no history, trying to go back does nothing
+     * 
+     *  @return previous audio file
+     */
     public File getLast()
     {
         File lastTrack = null;
@@ -214,6 +283,14 @@ public class Playlist {
     }
     
     
+    /**
+     *  Get names of all audio files in the playlist
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.0.0	Display a user-built list of WAV and MP3 audio files
+     * 
+     * @return list of audio file names in playlist
+     */
     public ObservableList<String> getNames()
     {
         ObservableList<String> names = FXCollections.observableArrayList();

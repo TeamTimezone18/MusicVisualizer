@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package musicvisualizer;
 
 import java.io.File;
@@ -10,15 +5,34 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * @author Tristan Hunter
+ *  @author Tristan Hunter
+ * 
+ *  This class defines a local file explorer for MP3 and WAV files.
+ * 
+ *  Lists of child directories and files within
+ *  a parent directory are stored as attributes 
+ * 
+ *  The attributes are observable so the controller
+ *  can show them in the GUI
+ * 
  */
+
 public class FileExplorer
 {    
+    
     ObservableList<File> files;
     ObservableList<File> childDirs;
     File curDir;
     
-    // Initialize to user's music folder 
+    
+    /**
+     *  Initialize a new file explorer object of the 
+     *  user's music folder or default path if not found
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  3.0.0	Initialize to user’s music folder C:\Users\[User]\Music
+     *  3.1.0	If not found, open folder containing the running app
+     */
     public FileExplorer()
     {
         String username = System.getProperty("user.name");
@@ -30,7 +44,18 @@ public class FileExplorer
          
     }
     
-    // Go to a specified directory
+    
+    /**
+     *  Update to a specified directory
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  1.1.0	List all accessible, unhidden child directories
+     *  1.2.0	List accessible, unhidden audio files
+     *  1.2.1	List only WAV and MP3 audio files
+     *  1.4.0	User can double-click directories in the list to update the list with the contents
+     * 
+     *  @param newdir the File object of the directory to navigate to
+     */
     public void openDirectory(File newdir)
     {
         curDir = newdir;
@@ -63,7 +88,15 @@ public class FileExplorer
         }
     }
     
-    // Go to parent directory n levels above curDir
+    
+    /**
+     *  Go to parent directory n levels above curDir
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  2.1.0	User can go up directories by clicking between “\” delimiters in the displayed path
+     * 
+     * @param n the number of parent directories to go up
+     */
     public void upDirectory(int n)
     {
         for (int i=0; i<n; i++)
@@ -74,8 +107,15 @@ public class FileExplorer
         openDirectory(curDir);
     }
     
-    
-    // Return list of strings of directoy names up to current directory 
+     
+    /**
+     *  Getter for the current directory path
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  2.0.0 	Display the full path of the parent directory of the contents list
+     * 
+     *  @return list of strings of directory names up to current directory
+     */
     public ObservableList<String> getPathList()
     {
         ObservableList<String> dirNames = FXCollections.observableArrayList();
@@ -91,7 +131,15 @@ public class FileExplorer
         return dirNames;
     }
     
-    // Return name strings of all files in current directory 
+    
+    /**
+     *  Getter for current directory contents file names
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  1.2.0	List accessible, unhidden audio files
+     * 
+     * @return list of all file names in current directory
+     */
     public ObservableList<String> getAllFileNames()
     {
         ObservableList<String> fileNames = FXCollections.observableArrayList();
@@ -105,7 +153,15 @@ public class FileExplorer
         return fileNames;
     }
     
-    // Return name strings of all folders in current directory 
+    
+    /**
+     *  Getter for current directory's child directory names
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  1.1.0	List all accessible, un-hidden child directories
+     * 
+     *  @return list of all child directory names in current directory
+     */
     public ObservableList<String> getAllDirNames()
     {
         ObservableList<String> dirNames = FXCollections.observableArrayList();
@@ -118,7 +174,16 @@ public class FileExplorer
         return dirNames;
     }
     
-    // Return list of Files objects at specific indices
+    
+    /**
+     *  Getter for File objects in the current directory
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.1.0	User can add the tracks selected in the file explorer
+     * 
+     * @param indices list of selected indices in file explorer ListView
+     * @return list of Files at specified indices in ascending order
+     */
     public ObservableList<File> getFilesAtIndices(ObservableList<Integer> indices)
     {
         ObservableList<File> filesAtIndices = FXCollections.observableArrayList();

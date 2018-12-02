@@ -39,6 +39,10 @@ import javafx.util.Duration;
 
 /**
  * @author Tristan Hunter
+ * 
+ * This class manipulates the FXML GUI, FileExplorer, Player, and
+ * Playlist objects according to user input from the GUI
+ * 
  */
 public class FXMLDocumentController implements Initializable 
 {    
@@ -102,30 +106,64 @@ public class FXMLDocumentController implements Initializable
     @FXML
     private Label albumLabel;
 
+    
+    /**
+     *  Add files selected in file explorer to playlist
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.1.1	User can press a button to add selected tracks
+     */
     @FXML
     private void handleAddButtonAction(ActionEvent event) 
     {    
         addSelectedFilesToPlaylist();
     }
     
+    
+    /**
+     *  Delete files selected in playlist
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.2.1	User can press a button to delete selected tracks
+     */
     @FXML
     private void handleDeleteButtonAction(ActionEvent event) 
     {
         deleteSelectedFilesFromPlaylist();
     }
     
+    /**
+     *  Get new track from the playlist and start playing it
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  5.2.1	User can click a button to start playing the next file from playlist
+     */
     @FXML
     private void handleSkipButtonAction(ActionEvent event) 
     {
         playNextTrack();
     }
 
+    
+    /**
+     *  Get last file from playlist and start playing it
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  5.3.1	User can click a button to start playing the last file played
+     */
     @FXML
     private void handlePrevButtonAction(ActionEvent event) 
     {
         playLastTrack();
     }
     
+    
+    /**
+     *  Move one selected track in the playlist up one index
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.3.1	User can move a selected track up the list using a button
+     */
     @FXML
     private void handleTrackUpButtonAction(ActionEvent event) 
     {
@@ -139,6 +177,13 @@ public class FXMLDocumentController implements Initializable
         
     }
     
+    
+    /**
+     *  Move one selected track in the playlist down one index
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.3.2	User can move a selected track down the list using a button
+     */
     @FXML
     private void handleTrackDownButtonAction(ActionEvent event) 
     {
@@ -158,6 +203,15 @@ public class FXMLDocumentController implements Initializable
     }
     
     
+    /**
+     *  Set playlist mode to shuffle and update buttons
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.4.0	User can configure a playlist mode (sequential/shuffle/repeat)
+     *  4.4.2	User can click a button to switch to shuffle mode
+     *  4.4.4	Shuffle and repeat buttons indicate current mode
+     *  4.4.5	Turning off shuffle or repeat mode returns the playlist to sequential mode
+     */
     @FXML
     private void handleShuffleButtonAction(ActionEvent event) 
     {
@@ -171,6 +225,16 @@ public class FXMLDocumentController implements Initializable
         }
     }
     
+    
+    /**
+     *  Set playlist mode to repeat and update buttons
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.4.0	User can configure a playlist mode (sequential/shuffle/repeat)
+     *  4.4.3	User can click a button to switch to repeat mode
+     *  4.4.4	Shuffle and repeat buttons indicate current mode
+     *  4.4.5	Turning off shuffle or repeat mode returns the playlist to sequential mode
+     */
     @FXML
     private void handleRepeatButtonAction(ActionEvent event) 
     {
@@ -185,12 +249,26 @@ public class FXMLDocumentController implements Initializable
         }
     }
 
+    
+    /**
+     *  Toggle playback paused/playing
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  6.1.0	User can click a button to toggle between paused and playing
+     */
     @FXML
     private void handlePlayButtonAction(ActionEvent event) 
     {
         togglePlayPause();
     }
     
+    
+    /**
+     *  Get the selected song from the playlist and start playback
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  5.1.1	User can double click a file in the playlist to start playback
+     */
     @FXML
     private void handlePlaylistDblClickAction(MouseEvent event) 
     {
@@ -206,6 +284,13 @@ public class FXMLDocumentController implements Initializable
         }    
     }
     
+    
+    /**
+     *  Update the file explorer ListViews with the contents of the selected parent directory
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  2.1.0	User can go up directories by double-clicking between “\” delimiters in the displayed path
+     */
     @FXML
     private void handlePathListDblClickAction(MouseEvent event) 
     {
@@ -222,6 +307,13 @@ public class FXMLDocumentController implements Initializable
         }    
     }
     
+    
+    /**
+     *  Update the file explorer ListViews with the contents of the selected child directory
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *   1.4.0	User can double-click a child directory in the list to update the list with it’s contents
+     */
     @FXML
     private void handleFileListDblClickAction(MouseEvent event) 
     {
@@ -239,6 +331,10 @@ public class FXMLDocumentController implements Initializable
         }    
     }
     
+    
+    /**
+     *  Key press listener for all GUI components
+     */
     @FXML
     public void keyListener(KeyEvent event)
     {
@@ -246,7 +342,10 @@ public class FXMLDocumentController implements Initializable
         {
             if (playList.isFocused())
             {
-                // Play selected track -- same as playlist dbl click
+                /**
+                 * ASSOCIATED REQUIREMENT:
+                 * 5.1.2   User can press ENTER when the playlist has focus to play the chosen file
+                 */
                 int selIndex = playList.getSelectionModel().getSelectedIndex();
                 if (selIndex >= 0)
                 {
@@ -257,60 +356,94 @@ public class FXMLDocumentController implements Initializable
             }
             else if (fileList.isFocused())
             {   
-                // if focused on file explorer add the selected tracks
+                /**
+                 * ASSOCIATED REQUIREMENT:
+                 * 4.1.2    User can press ENTER while the file explorer is focused to add tracks
+                 */
                 addSelectedFilesToPlaylist();
             }
-            else
-            {
-                // if focus is off lists, skip to next track
-                playNextTrack();
-            }
          }
+        else if (event.getCode() == KeyCode.END)
+        {
+            /**
+             * ASSOCIATED REQUIREMENT:
+             * 5.2.2    User can press END to start playing the next file from playlist
+             */
+            playNextTrack();
+            event.consume();
+        } 
         else if (event.getCode() == KeyCode.BACK_SPACE)
-            {
-                // Previous track
-                playLastTrack();
-                event.consume();
-            }     
+        {
+            /**
+             * ASSOCIATED REQUIREMENT:
+             * 5.3.2    User can press BACKSPACE to start playing the last file played
+             */
+            playLastTrack();
+            event.consume();
+        }     
         else if (event.getCode() == KeyCode.SPACE)
-            {
-                // Play/pause
-                togglePlayPause();
-            }        
+        {
+            /**
+             * ASSOCIATED REQUIREMENT:
+             * 6.2.0    User can press SPACE to toggle between paused and playing
+             */
+            togglePlayPause();
+        }        
         else if (event.getCode() == KeyCode.DELETE && playList.isFocused())
-            {
-                // Delete selected tracks if playlist is focused
-                deleteSelectedFilesFromPlaylist();
-            }
+        {
+            /**
+             * ASSOCIATED REQUIREMENT:
+             * 4.2.2    User can press DELETE while the playlist is focused to delete tracks
+             */
+            deleteSelectedFilesFromPlaylist();
+        }
         else if (event.getCode() == KeyCode.F1)
-            {
-                // set volume down
-                volumeSlider.setValue(volumeSlider.getValue()-5);
-            }
+        {
+            /**
+             * ASSOCIATED REQUIREMENT:
+             * 7.2.0    User can press F1 to decrease volume and update slider
+             */
+            volumeSlider.setValue(volumeSlider.getValue()-5);
+        }
         else if (event.getCode() == KeyCode.F2)
-            {
-                // set volume up
-                volumeSlider.setValue(volumeSlider.getValue()+5);
-            }
+        {
+            /**
+             * ASSOCIATED REQUIREMENT:
+             * 7.3.0    User can press F2 to increase volume and update slider
+             */
+            volumeSlider.setValue(volumeSlider.getValue()+5);
+        }
         else if(!timeSlider.disabledProperty().getValue())
+        {
+            if (event.getCode() == KeyCode.RIGHT)
             {
-                if (event.getCode() == KeyCode.RIGHT)
-                {
-                    // Seek forward
-                    timeSlider.setValue(timeSlider.getValue()+1);
-                    player.setTime(timeSlider.getValue());
-                    event.consume(); 
-                }
-                else if (event.getCode() == KeyCode.LEFT)
-                {
-                    // Seek back
-                    timeSlider.setValue(timeSlider.getValue()-1);
-                    player.setTime(timeSlider.getValue());
-                    event.consume(); 
-                }
+                /**
+                * ASSOCIATED REQUIREMENT:
+                * 8.2.0	User can press RIGHT to increase playback time and update slider
+                * 8.5.0	Hotkeys do nothing until a file is played
+                */
+                timeSlider.setValue(timeSlider.getValue()+1);
+                player.setTime(timeSlider.getValue());
+                event.consume(); 
             }
+            else if (event.getCode() == KeyCode.LEFT)
+            {
+                /**
+                * ASSOCIATED REQUIREMENT:
+                * 8.3.0	User can press LEFT to decrease playback time and update slider
+                * 8.5.0	Hotkeys do nothing until a file is played
+                */
+                timeSlider.setValue(timeSlider.getValue()-1);
+                player.setTime(timeSlider.getValue());
+                event.consume(); 
+            }
+        }
     }
 
+    
+    /**
+     * Instantiate supporting objects and initialize GUI
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) 
     {
@@ -328,7 +461,16 @@ public class FXMLDocumentController implements Initializable
         
         initializeChart();
         
-        // Initialize label and image binding to track metadata properties
+        /**
+         * Setup label and image binding to track metadata properties
+         * 
+         * ASSOCIATED REQUIREMENTS:
+         * 9.1.0    Track title is displayed
+         * 9.2.0    Artist name is displayed
+         * 9.3.0    Album name is displayed
+         * 9.4.1    Duration is shown at the end of playback time slider
+         * 9.5.1    Current playback time is shown by slider position
+         */
         artistLabel.textProperty().bind(player.track.artist);
         albumLabel.textProperty().bind(player.track.album);
         titleLabel.textProperty().bind(player.track.title);
@@ -340,6 +482,15 @@ public class FXMLDocumentController implements Initializable
         
     }    
 
+    
+    /**
+     * Instantiate a FileExplorer with a corresponding ListView
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 1.0.0	Display the contents of a directory in an interactive list
+     * 1.3.0	User can select multiple file in the list
+     * 2.0.0 	Display the full path of the parent directory of the contents list
+     */
     private void initializeFileExplorer()
     {
         // Create FileExplorer object
@@ -358,6 +509,14 @@ public class FXMLDocumentController implements Initializable
         updateFileExplorerListViews();
     }
     
+    
+    /**
+     * Instantiate a Playlist with a corresponding ListView
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 4.0.0	Display a user-built list of WAV and MP3 audio files
+     * 4.2.3	User can select [and delete] multiple tracks at once (note selection model setting)
+     */
     private void initializePlaylist()
     {
         // Create Playlist object
@@ -376,6 +535,14 @@ public class FXMLDocumentController implements Initializable
         updatePlaylistListView();
     }
     
+    
+    /**
+     * Setup mouse press functions and disable slider until a track is loaded
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 8.1.0	User can drag a slider to adjust playback time
+     * 8.4.0	Playback time slider is disabled at minimum until a file is played
+     */
     private void initializeTimeSlider()
     {
         timeSlider.disableProperty().set(true);
@@ -393,6 +560,14 @@ public class FXMLDocumentController implements Initializable
         });
     }
     
+    
+    /**
+     * Set volume to max and setup listener
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 7.1.0	User can drag a slider to adjust playback volume
+     * 7.4.0	Volume is set to max on program start
+     */
     private void initializeVolumeSlider()
     {
         volumeSlider.setValue(100);
@@ -407,9 +582,23 @@ public class FXMLDocumentController implements Initializable
         });
     }
     
-        private void initializeChart()
+    
+     /**
+     * Setup spectrum data graph and spectrum data listener
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 10.1.0	Audio data is represented as a bar chart of frequency magnitudes 
+     * 10.1.1	Horizontal axis is discrete ‘bands’ of frequency ranges
+     * 10.1.2	Vertical axis is magnitude
+     * 10.1.3	Axes and legend of the chart should be hidden
+     * 10.2.0	While an audio file is playing, chart is updated in sync with playback
+     * 10.2.1 	Chart updates 10 times per second without flickering
+     * 10.2.2	Chart stops updating when playback is paused
+     * 10.2.3	Chart is empty when the app is started
+     */
+    private void initializeChart()
     {
-        // setup the animation timeline and data for the chart
+        // Setup the animation timeline and data for the chart
         chart.setAnimated(false);
         chart.setHorizontalGridLinesVisible(false);
         chart.setVerticalGridLinesVisible(false);
@@ -417,9 +606,11 @@ public class FXMLDocumentController implements Initializable
         yAxis.setOpacity(0);
         
         Timeline animation = new Timeline();
-        animation.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATERATE), new    EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent actionEvent) {
-              // Update graph data
+        animation.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATERATE), new EventHandler<ActionEvent>() 
+        {
+            @Override public void handle(ActionEvent actionEvent) 
+            {
+              // Update graph data on every key frame
               Integer index = 0;
               for (Float value : player.track.spectrumData)
               {
@@ -440,6 +631,14 @@ public class FXMLDocumentController implements Initializable
         chart.getData().addAll(spectrumDataSeries);
     }
     
+    
+    /**
+     * Disable focus traversal so the LEFT/RIGHT keys only control playback time
+     * 
+     * ASSOCIATED REQUIREMENTS (indirect):
+     * 8.2.0	User can press RIGHT to increase playback time and update slider
+     * 8.3.0	User can press LEFT to decrease playback time and update slider
+     */
     private void configureFocusSettings()
     {
         // Give user a way to take focus off of lists
@@ -464,6 +663,16 @@ public class FXMLDocumentController implements Initializable
     }
     
     
+    /**
+     * Refresh file explorer contents and path ListViews with current data
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 1.1.0	List all accessible, unhidden child directories
+     * 1.1.1	Each directory in the list should have a folder glyph
+     * 1.2.1	List only WAV and MP3 audio files
+     * 1.2.2	Each file in the list should have a file glyph
+     * 2.0.0 	Display the full path of the parent directory of the contents list
+     */
     private void updateFileExplorerListViews()
     {
         // Create custom items for directorys and add to fileListViewData 
@@ -489,6 +698,13 @@ public class FXMLDocumentController implements Initializable
         filePathList.scrollTo(fileExplorer.getPathList().size());
     }
     
+    
+    /**
+     * Refresh playlist ListView with current playlist data
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 4.0.0	Display a user-built list of WAV and MP3 audio files
+     */
     private void updatePlaylistListView()
     {
         playListData.clear();
@@ -501,6 +717,13 @@ public class FXMLDocumentController implements Initializable
         updatePlaylistCurTrackItem();
     }
     
+    
+    /**
+     * Find the currently playing track in the playlist and make bold
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 5.4.0	Current track is indicated in playlist with bold font
+     */
     private void updatePlaylistCurTrackItem()
     {
         int ctr = 0;
@@ -518,6 +741,18 @@ public class FXMLDocumentController implements Initializable
         }
     }
     
+    
+    /**
+     * Start playback from a new file and setup listeners to player
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 5.1.0	User can play an audio file from the playlist
+     * 5.5.0	Next track is started when the end of a track is reached
+     * 9.5.1	Current playback time is shown by slider position
+     * 10.2.0	While an audio file is playing, chart is updated in sync with playback (note setAudioSpectrumInterval())
+     * 
+     * @param newFile audio file to start playing
+     */
     private void playNewTrack(File newFile)
     {
         albumImage.setOpacity(0); // hide so default metadata so it doesn't flash during update
@@ -560,6 +795,12 @@ public class FXMLDocumentController implements Initializable
         
     }
     
+    /**
+     * Configure drag and drop functions from file explorer to playlist
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 4.1.3	User can drag selected tracks from file explorer and drop in playlist
+     */
     private void setupFileDragDrop()
     {
         fileList.setOnDragDetected(new EventHandler<MouseEvent>() {
@@ -586,7 +827,7 @@ public class FXMLDocumentController implements Initializable
         
         playList.setOnDragDropped(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
-                // if there is a file selection string data on dragboard, add selected files
+                // If there is a file selection string data on dragboard, add selected files
                 Dragboard db = event.getDragboard();
                 boolean success = false;
                 if (db.hasString()) {
@@ -600,6 +841,14 @@ public class FXMLDocumentController implements Initializable
         });
     }
     
+    
+    /**
+     *  Add files selected in file explorer to playlist and update playlist ListView
+     * 
+     *  ASSOCIATED REQUIREMENTS:
+     *  4.1.0	User can add the tracks selected in the file explorer
+     *  4.1.5	Attempts to add directories selected in the file explorer are ignored
+     */
     private void addSelectedFilesToPlaylist()
     {
         // If index selected in file explorer is a valid file, add to new list for passing to playlist
@@ -628,6 +877,13 @@ public class FXMLDocumentController implements Initializable
         }
     }
     
+    
+    /**
+     * Delete selected files from playlist and update playlist ListView
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 4.2.0	User can delete tracks selected in the playlist
+     */
     private void deleteSelectedFilesFromPlaylist()
     {
         // Get selected items and call playlist delete method, then update GUI
@@ -637,6 +893,15 @@ public class FXMLDocumentController implements Initializable
         
     }
     
+    
+    /**
+     * Play the next track from the playlist (if there is one)
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 5.2.0	User can skip to the next file in the playlist
+     * 5.5.0	Next track is started when the end of a track is reached
+     * 5.2.6	If there are no files in the playlist, the button and END key do nothing
+     */
     private void playNextTrack()
     {
         // Pass next file from playlist to player
@@ -649,6 +914,14 @@ public class FXMLDocumentController implements Initializable
         
     }
  
+    
+     /**
+     * Play the last track from the playlist (if there is one)
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 5.3.0	User can skip through a history of previously played tracks
+     * 5.3.3	If there is no history, trying to go back does nothing
+     */
     private void playLastTrack()
     {
         // Pass last file from playlist history to player
@@ -661,6 +934,14 @@ public class FXMLDocumentController implements Initializable
         
     }
     
+    
+    /** 
+     * Toggle playback pause on/off
+     * 
+     * ASSOCIATED REQUIREMENTS:
+     * 6.0.0	User can pause and unpause audio file playback
+     * 6.3.0 	The button and hotkey do nothing if no file is playing
+     */
     private void togglePlayPause()
     {
         if (player.mp != null)
