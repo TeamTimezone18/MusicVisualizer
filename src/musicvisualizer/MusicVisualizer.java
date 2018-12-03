@@ -22,6 +22,8 @@ public class MusicVisualizer extends Application
         scene.getStylesheets().add(getClass().getResource("/Resource/GUIStyle.css").toExternalForm());
         
         stage.setScene(scene);
+        stage.setMinHeight(450);
+        stage.setMinWidth(525);
         stage.show();
     }
 

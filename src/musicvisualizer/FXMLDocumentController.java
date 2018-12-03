@@ -60,7 +60,7 @@ public class FXMLDocumentController implements Initializable
     final int NUMBARS = 128;  // number of bars in the barchart
     final int UPDATERATE = 20; // refresh rate in hertz
     
-    
+
     @FXML
     private ListView fileList;
     @FXML
@@ -105,6 +105,10 @@ public class FXMLDocumentController implements Initializable
     private Label artistLabel;
     @FXML
     private Label albumLabel;
+    @FXML
+    private ImageView volumeIcon;
+    @FXML
+    private AnchorPane volSliderPane;
 
     
     /**
@@ -572,6 +576,20 @@ public class FXMLDocumentController implements Initializable
     {
         volumeSlider.setValue(100);
         
+        volSliderPane.setOpacity(0);
+        volumeIcon.setOnMouseEntered(event -> {
+            volSliderPane.setOpacity(1);
+        });
+        volumeIcon.setOnMouseExited(event -> {
+            volSliderPane.setOpacity(0);
+        });
+        volSliderPane.setOnMouseEntered(event -> {
+            volSliderPane.setOpacity(1);
+        });
+        volSliderPane.setOnMouseExited(event -> {
+            volSliderPane.setOpacity(0);
+        });
+        
         volumeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                    if (player.mp != null)
@@ -600,10 +618,12 @@ public class FXMLDocumentController implements Initializable
     {
         // Setup the animation timeline and data for the chart
         chart.setAnimated(false);
-        chart.setHorizontalGridLinesVisible(false);
+        chart.getYAxis().setOpacity(0);
+        chart.getXAxis().setOpacity(0);
         chart.setVerticalGridLinesVisible(false);
+        chart.setHorizontalGridLinesVisible(false);
         chart.setLegendVisible(false);
-        yAxis.setOpacity(0);
+        //yAxis.setOpacity(0);
         
         Timeline animation = new Timeline();
         animation.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATERATE), new EventHandler<ActionEvent>() 
