@@ -54,8 +54,6 @@ public class FXMLDocumentController implements Initializable
     ObservableList<CustomListViewItem> fileListViewData = FXCollections.observableArrayList();
     Integer numDir;
     
-    CategoryAxis xAxis = new CategoryAxis();
-    NumberAxis yAxis = new NumberAxis();
     BarChart.Series spectrumDataSeries = new BarChart.Series();
     final int NUMBARS = 128;  // number of bars in the barchart
     final int UPDATERATE = 20; // refresh rate in hertz
@@ -282,8 +280,16 @@ public class FXMLDocumentController implements Initializable
             if (selIndex >= 0)
             {
                 File newTrack = playlist.tracks.get(selIndex);
-                playlist.setCurTrack(selIndex);
-                playNewTrack(newTrack);
+                if (newTrack.exists())
+                {
+                    playlist.setCurTrack(selIndex);
+                    playNewTrack(newTrack);
+                }
+                else
+                {   // Remove track that is missing from it's original location
+                    playlist.delTracks(playList.getSelectionModel().getSelectedIndices());
+                    updatePlaylistListView();
+                }
             }
         }    
     }
@@ -328,7 +334,15 @@ public class FXMLDocumentController implements Initializable
             int selIndex = fileList.getSelectionModel().getSelectedIndex();
             if (selIndex >= 0 && selIndex < numDir)
             {
-                fileExplorer.openDirectory(fileExplorer.childDirs.get(fileList.getSelectionModel().getSelectedIndex()));
+                File selectedDir = fileExplorer.childDirs.get(fileList.getSelectionModel().getSelectedIndex());
+                if (selectedDir.exists())
+                {
+                    fileExplorer.openDirectory(selectedDir);
+                }
+                else
+                {
+                    fileExplorer.openDirectory(fileExplorer.curDir);
+                }
                 fileListViewData.clear();
                 updateFileExplorerListViews();
             }
@@ -623,7 +637,6 @@ public class FXMLDocumentController implements Initializable
         chart.setVerticalGridLinesVisible(false);
         chart.setHorizontalGridLinesVisible(false);
         chart.setLegendVisible(false);
-        //yAxis.setOpacity(0);
         
         Timeline animation = new Timeline();
         animation.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATERATE), new EventHandler<ActionEvent>() 
@@ -920,7 +933,7 @@ public class FXMLDocumentController implements Initializable
      * ASSOCIATED REQUIREMENTS:
      * 5.2.0	User can skip to the next file in the playlist
      * 5.5.0	Next track is started when the end of a track is reached
-     * 5.2.6	If there are no files in the playlist, the button and END key do nothing
+     * 5.2.6	If there are no files in the playlist, skipping to the next track does nothing
      */
     private void playNextTrack()
     {

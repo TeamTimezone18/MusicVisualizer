@@ -40,8 +40,14 @@ public class FileExplorer
         
         files = FXCollections.observableArrayList();
         childDirs = FXCollections.observableArrayList();
+        
+        if (!curDir.exists())
+        {
+            curDir = new File(System.getProperty("user.dir"));
+        }
+        
         openDirectory(curDir);
-         
+        
     }
     
     
