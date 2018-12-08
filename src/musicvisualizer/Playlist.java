@@ -236,9 +236,16 @@ public class Playlist
                 // Get random number that isn't the current track index
                 Random rand = new Random();
                 nextIndex = rand.nextInt(tracks.size());
-                while (nextIndex == curTrackIndex)
+                if (tracks.size() == 1)
                 {
-                    nextIndex = rand.nextInt(tracks.size());
+                    nextIndex = 0;
+                }
+                else
+                {
+                    while (nextIndex == curTrackIndex)
+                    {
+                        nextIndex = rand.nextInt(tracks.size());
+                    }
                 }
             }
             else if (mode == MODE.REPEAT)

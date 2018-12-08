@@ -8,6 +8,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -220,10 +221,13 @@ public class FXMLDocumentController implements Initializable
         if (playlist.mode.toString().equals("SHUFFLE"))
         {
             playlist.setMode("NORMAL");
+            shuffleButton.setStyle("-fx-border-color: #000000");
         }
         else
         {
             playlist.setMode("SHUFFLE");
+            shuffleButton.setStyle("-fx-border-color: #ED5402");
+            repeatButton.setStyle("-fx-border-color: #000000");  
         }
     }
     
@@ -244,10 +248,13 @@ public class FXMLDocumentController implements Initializable
         if (playlist.mode.toString().equals("REPEAT"))
         {
             playlist.setMode("NORMAL");
+            repeatButton.setStyle("-fx-border-color: #000000");
         }
         else
         {
             playlist.setMode("REPEAT");
+            repeatButton.setStyle("-fx-border-color: #ED5402");
+            shuffleButton.setStyle("-fx-border-color: #000000");            
         }
     }
 
@@ -565,6 +572,7 @@ public class FXMLDocumentController implements Initializable
     {
         timeSlider.disableProperty().set(true);
         
+        // Setup response to dragging
         timeSlider.setOnMousePressed(event -> {
             player.mp.pause();
             player.setTime(timeSlider.getValue());
@@ -576,6 +584,23 @@ public class FXMLDocumentController implements Initializable
         timeSlider.setOnMouseReleased(event -> {
             player.mp.play();
         });
+        
+        // Setup binding for progress fill
+        timeSlider.styleProperty().bind(Bindings.createStringBinding(() -> 
+        {
+            Double percentage = (timeSlider.getValue() - timeSlider.getMin()) / (timeSlider.getMax() - timeSlider.getMin()) * 100.0 ;
+            
+            if (percentage.isNaN())
+            {
+                percentage = 0.0;
+            }
+            
+            return String.format("-slider-track-color: linear-gradient(to right, -slider-filled-track-color 0%%, "
+                                + "-slider-filled-track-color %f%%, -fx-base %f%%, -fx-base 100%%);", 
+                                percentage, percentage);
+        },
+        timeSlider.valueProperty(), timeSlider.minProperty(), timeSlider.maxProperty()));
+        
     }
     
     
@@ -590,6 +615,7 @@ public class FXMLDocumentController implements Initializable
     {
         volumeSlider.setValue(100);
         
+        // Setup transparent slider pane, unless mouse over
         volSliderPane.setOpacity(0);
         volumeIcon.setOnMouseEntered(event -> {
             volSliderPane.setOpacity(1);
@@ -604,6 +630,7 @@ public class FXMLDocumentController implements Initializable
             volSliderPane.setOpacity(0);
         });
         
+        // Setup listener to adjust player volume
         volumeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                    if (player.mp != null)
@@ -612,6 +639,16 @@ public class FXMLDocumentController implements Initializable
                    }
             }
         });
+        
+        // Setup binding for partial fill
+        volumeSlider.styleProperty().bind(Bindings.createStringBinding(() -> 
+        {
+            double percentage = (volumeSlider.getValue() - volumeSlider.getMin()) / (volumeSlider.getMax() - volumeSlider.getMin()) * 100.0 ;
+            return String.format("-slider-track-color: linear-gradient(to top, -slider-filled-track-color 0%%, " 
+                                 + "-slider-filled-track-color %f%%, -fx-base %f%%, -fx-base 100%%);", 
+                                 percentage, percentage);
+        },
+        volumeSlider.valueProperty(), volumeSlider.minProperty(), volumeSlider.maxProperty()));
     }
     
     

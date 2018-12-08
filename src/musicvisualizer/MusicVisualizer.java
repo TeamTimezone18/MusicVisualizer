@@ -20,10 +20,10 @@ public class MusicVisualizer extends Application
         Scene scene = new Scene(root);
         
         scene.getStylesheets().add(getClass().getResource("/Resource/GUIStyle.css").toExternalForm());
-        
+        stage.setTitle("JavaFX Audio Player");
         stage.setScene(scene);
         stage.setMinHeight(450);
-        stage.setMinWidth(525);
+        stage.setMinWidth(520);
         stage.show();
     }
 

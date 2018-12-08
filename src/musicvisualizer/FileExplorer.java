@@ -120,7 +120,7 @@ public class FileExplorer
      *  ASSOCIATED REQUIREMENTS:
      *  2.0.0 	Display the full path of the parent directory of the contents list
      * 
-     *  @return list of strings of directory names up to current directory
+     *  @return list of strings of directory names up to current directory (delimited by '\\')
      */
     public ObservableList<String> getPathList()
     {
@@ -196,7 +196,10 @@ public class FileExplorer
        
         for (int index : indices) 
         {
+            if(index >= 0 && index <= files.size())
+            {
                 filesAtIndices.add((files.get(index)));
+            }
         }
         
         return filesAtIndices;
