@@ -45,7 +45,7 @@ import javafx.util.Duration;
  * Playlist objects according to user input
  * 
  */
-public class FXMLDocumentController implements Initializable 
+public class GUIController implements Initializable 
 {    
     FileExplorer fileExplorer;
     Player player;
