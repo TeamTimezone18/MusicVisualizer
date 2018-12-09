@@ -42,7 +42,7 @@ import javafx.util.Duration;
  * @author Tristan Hunter
  * 
  * This class manipulates the FXML GUI, FileExplorer, Player, and
- * Playlist objects according to user input from the GUI
+ * Playlist objects according to user input
  * 
  */
 public class FXMLDocumentController implements Initializable 
@@ -486,6 +486,10 @@ public class FXMLDocumentController implements Initializable
         
         initializeChart();
         
+        shuffleButton.setStyle("-fx-border-color: #000000");
+        repeatButton.setStyle("-fx-border-color: #000000"); 
+        
+        
         /**
          * Setup label and image binding to track metadata properties
          * 
@@ -504,6 +508,7 @@ public class FXMLDocumentController implements Initializable
         albumImage.imageProperty().bind(player.track.albumImage);
         
         setupFileDragDrop();
+        
         
     }    
 

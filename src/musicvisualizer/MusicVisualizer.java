@@ -4,10 +4,14 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
  * @author Tristan Hunter
+ * 
+ * This class configures the application window, applies a CSS document to the GUI, and launches the app
+ * 
  */
 public class MusicVisualizer extends Application 
 {
@@ -21,6 +25,7 @@ public class MusicVisualizer extends Application
         
         scene.getStylesheets().add(getClass().getResource("/Resource/GUIStyle.css").toExternalForm());
         stage.setTitle("JavaFX Audio Player");
+        stage.getIcons().add(new Image("/Resource/Vinyl.gif"));
         stage.setScene(scene);
         stage.setMinHeight(450);
         stage.setMinWidth(520);

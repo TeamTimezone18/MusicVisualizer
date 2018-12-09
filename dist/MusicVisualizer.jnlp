@@ -7,8 +7,8 @@
     <offline-allowed/>
   </information>
   <resources>
-    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="MusicVisualizer.jar" size="486085" download="eager" />
+    <j2se version="1.6+" java-vm-args="-Xmx512m "  href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="MusicVisualizer.jar" size="1250847" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="MusicVisualizer" >
     <param name="requiredFXVersion" value="8.0+"/>
